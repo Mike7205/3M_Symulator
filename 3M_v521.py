@@ -234,34 +234,34 @@ if st.button("Run Symulation", type="primary"):
     # Analiza DMA
     st.subheader('DMA Chart', divider='red')
     DMA = st.radio('', list(DMA_dict.values()), horizontal=True)
-    # if st.button("Run DMA Chart"):    
+    if st.button("Run DMA Chart"):    
         # Tworzenie tabeli wejściowej na podstawie wybranego miasta
-    df_T4_source = pd.read_excel('Data_T4.xlsx')
-    df_T4_DMA = df_T4_source[['Time Period', f'{DMA}_BS', f'{DMA}_Inc_rev', f'Y_{DMA}'] + 
-        [col for col in df_T4_source.columns if col.startswith(f'{DMA}_Sp_')]]  
-    # Zidentyfikuj kolumny, które mają prefiks "Sp_"
-    sp_columns = [col for col in df_T4_DMA.columns if col.startswith(f'{DMA}_Sp_')]   
-    # Ogranicz liczbę kolumn Sp_ do 4
-    sp_columns = sp_columns[:5]   
-    # Zbierz wszystkie kolumny do wykresu
-    y_columns = [f'{DMA}_BS', f'{DMA}_Inc_rev', f'Y_{DMA}'] + sp_columns  
-    # Zdefiniuj mapę kolorów bazując na poprzednich
-    base_color_map = {
-                f'{DMA}_BS': '#1f77b4',  # niebieski
-                f'{DMA}_Inc_rev': '#ff7f0e',  # pomarańczowy
-                f'Y_{DMA}': '#2ca02c',  # zielony
-                f'{DMA}_Sp_TV': '#d62728',  # czerwony
-                f'{DMA}_Sp_Facebook': '#9467bd',  # fioletowy
-                f'{DMA}_Sp_Onet': '#8c564b',  # brązowy
-                f'{DMA}_Sp_Wp': '#e377c2', # różowy
-                f'{DMA}_Sp_Twiter': '#F6BE00'}        
-    # Przypisz kolory do nowych zmiennych "Sp_" bazując na istniejących kolorach
-    new_sp_colors = {sp_columns[i]: list(base_color_map.values())[3 + i % (len(base_color_map) - 3)] for i in range(len(sp_columns))}    
-    # Połącz mapy kolorów
-    color_discrete_map = {**base_color_map, **new_sp_colors}   
-    # Tworzenie wykresu
-    fig_DMA = px.area(df_T4_DMA, x='Time Period', y=y_columns, color_discrete_map=color_discrete_map, width=1500, height=500)
-    fig_DMA.update_layout(xaxis_title='Time Period', yaxis_title='Values', title=f'Analiza {DMA}: Yi, Base_S & Marketing Spendings for {DMA}')
-    fig_DMA.update_layout(showlegend=True)    
-    st.plotly_chart(fig_DMA)
+        df_T4_source = pd.read_excel('Data_T4.xlsx')
+        df_T4_DMA = df_T4_source[['Time Period', f'{DMA}_BS', f'{DMA}_Inc_rev', f'Y_{DMA}'] + 
+            [col for col in df_T4_source.columns if col.startswith(f'{DMA}_Sp_')]]  
+        # Zidentyfikuj kolumny, które mają prefiks "Sp_"
+        sp_columns = [col for col in df_T4_DMA.columns if col.startswith(f'{DMA}_Sp_')]   
+        # Ogranicz liczbę kolumn Sp_ do 4
+        sp_columns = sp_columns[:5]   
+        # Zbierz wszystkie kolumny do wykresu
+        y_columns = [f'{DMA}_BS', f'{DMA}_Inc_rev', f'Y_{DMA}'] + sp_columns  
+        # Zdefiniuj mapę kolorów bazując na poprzednich
+        base_color_map = {
+                    f'{DMA}_BS': '#1f77b4',  # niebieski
+                    f'{DMA}_Inc_rev': '#ff7f0e',  # pomarańczowy
+                    f'Y_{DMA}': '#2ca02c',  # zielony
+                    f'{DMA}_Sp_TV': '#d62728',  # czerwony
+                    f'{DMA}_Sp_Facebook': '#9467bd',  # fioletowy
+                    f'{DMA}_Sp_Onet': '#8c564b',  # brązowy
+                    f'{DMA}_Sp_Wp': '#e377c2', # różowy
+                    f'{DMA}_Sp_Twiter': '#F6BE00'}        
+        # Przypisz kolory do nowych zmiennych "Sp_" bazując na istniejących kolorach
+        new_sp_colors = {sp_columns[i]: list(base_color_map.values())[3 + i % (len(base_color_map) - 3)] for i in range(len(sp_columns))}    
+        # Połącz mapy kolorów
+        color_discrete_map = {**base_color_map, **new_sp_colors}   
+        # Tworzenie wykresu
+        fig_DMA = px.area(df_T4_DMA, x='Time Period', y=y_columns, color_discrete_map=color_discrete_map, width=1500, height=500)
+        fig_DMA.update_layout(xaxis_title='Time Period', yaxis_title='Values', title=f'Analiza {DMA}: Yi, Base_S & Marketing Spendings for {DMA}')
+        fig_DMA.update_layout(showlegend=True)    
+        st.plotly_chart(fig_DMA)
 
