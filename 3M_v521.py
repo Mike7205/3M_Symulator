@@ -210,7 +210,7 @@ st.subheader('Dane symulacyjne', divider='red')
 if st.button("Run Symulation", type="primary"):
     Data_T3(base_sales_total, periods, Sp_x, marketing_dict, DMA_dict)
     st.subheader('Wizualizacja Symulacji na poziomie Y', divider='red')
-    df_T4_s = pd.read_excel('Data_T4.xlsx', index = False)
+    df_T4_s = pd.read_excel('Data_T4.xlsx', index_col=0)
     sp_columns = [col for col in df_T4_s.columns if col.startswith('Sp_')]
     sp_columns = sp_columns[:5]
     y_columns = ['Base_S', 'Inc_reve', 'Y'] + sp_columns
@@ -228,7 +228,7 @@ if st.button("Run Symulation", type="primary"):
 
 show_table = st.checkbox('Czy chcesz zobaczyć tabele z danymi?')
 if show_table:
-    df_T4_s1 = pd.read_excel('Data_T4.xlsx', index = False)
+    df_T4_s1 = pd.read_excel('Data_T4.xlsx', index_col=0)
     for_df = df_T4_s1.T.applymap(lambda x: f"{float(x):,.2f}" if isinstance(x, (int, float)) else x)
     st.markdown(for_df.to_html(escape=False, index=True), unsafe_allow_html=True)
 
@@ -237,7 +237,7 @@ st.subheader('DMA Chart', divider='red')
 DMA = st.radio('', list(DMA_dict.values()), horizontal=True)
 if st.button("Run DMA Chart"):    
     # Tworzenie tabeli wejściowej na podstawie wybranego miasta
-    df_T4_source = pd.read_excel('Data_T4.xlsx', index = False)
+    df_T4_source = pd.read_excel('Data_T4.xlsx', index_col=0)
     df_T4_DMA = df_T4_source[['Time Period', f'{DMA}_BS', f'{DMA}_Inc_rev', f'Y_{DMA}'] + 
         [col for col in df_T4_source.columns if col.startswith(f'{DMA}_Sp_')]]  
     # Zidentyfikuj kolumny, które mają prefiks "Sp_"
