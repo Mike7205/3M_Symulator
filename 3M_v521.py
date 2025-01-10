@@ -230,7 +230,7 @@ st.subheader('Dane symulacyjne', divider='red')
 
 if st.button("Run Symulation", type="primary"):
     Data_T3(base_sales_total, periods, Sp_x, marketing_dict, DMA_dict)
-    st.subheader('Wizualizacja Symulacji na poziomie Y', divider='red')
+    st.subheader('Total Sales Simulation', divider='red')
     df_T4_s = pd.read_excel('Data_T4.xlsx', index_col=0)
     sp_columns = [col for col in df_T4_s.columns if col.startswith('Sp_')]
     sp_columns = sp_columns[:5]
@@ -254,7 +254,7 @@ if show_table:
     st.markdown(for_df.to_html(escape=False, index=True), unsafe_allow_html=True)
 
 # Analiza DMA
-st.subheader('DMA Chart', divider='red')
+st.subheader('DMA Sales Simulation', divider='red')
 DMA = st.radio('', list(DMA_dict.values()), horizontal=True)
 if st.button("Run DMA Chart"):    
     # Tworzenie tabeli wejściowej na podstawie wybranego miasta
