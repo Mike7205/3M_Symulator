@@ -1,0 +1,6 @@
+streamlit
+plotly.express
+openpyxl
+numpy
+pandas
+random
