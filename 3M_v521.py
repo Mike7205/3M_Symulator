@@ -210,7 +210,8 @@ st.subheader('Dane symulacyjne', divider='red')
 if st.button("Run Symulation", type="primary"):
     Data_T3(base_sales_total, periods, Sp_x, marketing_dict, DMA_dict)
     st.subheader('Wizualizacja Symulacji na poziomie Y', divider='red')
-    sp_columns = [col for col in df_T4.columns if col.startswith('Sp_')]
+    df_T4_s = pd.read_excel('Data_T4.xlsx')
+    sp_columns = [col for col in df_T4_s.columns if col.startswith('Sp_')]
     sp_columns = sp_columns[:5]
     y_columns = ['Base_S', 'Inc_reve', 'Y'] + sp_columns
     
@@ -219,7 +220,7 @@ if st.button("Run Symulation", type="primary"):
     
     new_sp_colors = {sp_columns[i]: list(base_color_map.values())[3 + i % (len(base_color_map) - 3)] for i in range(len(sp_columns))}
     color_discrete_map = {**base_color_map, **new_sp_colors}
-    fig_base = px.area(df_T4, x='Time Period', y=y_columns, color_discrete_map=color_discrete_map, width=1500, height=400)
+    fig_base = px.area(df_T4_s, x='Time Period', y=y_columns, color_discrete_map=color_discrete_map, width=1500, height=400)
     fig_base.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Yi, Base_S & Marketing Spendings')
     fig_base.update_layout(showlegend=True)
     
@@ -227,9 +228,8 @@ if st.button("Run Symulation", type="primary"):
 
 show_table = st.checkbox('Czy chcesz zobaczyć tabele z danymi?')
 if show_table:
-    for_df = df_T4.T.applymap(lambda x: f"{float(x):,.2f}" if isinstance(x, (int, float)) else x)
+    for_df = df_T4_s.T.applymap(lambda x: f"{float(x):,.2f}" if isinstance(x, (int, float)) else x)
     st.markdown(for_df.to_html(escape=False, index=True), unsafe_allow_html=True)
-
 
 # Analiza DMA
 st.subheader('DMA Chart', divider='red')
