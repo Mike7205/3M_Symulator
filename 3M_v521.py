@@ -99,10 +99,10 @@ def Data_T3(base_sales_total, periods, Sp_x, marketing_dict, DMA_dict):
         column_name = f'Sp_{key[-2:]}'
         df_T3[f'F_co_{key[-2:]}'] = df_T3['Inc_reve'] / df_T3[column_name]
 
-    # Dodawanie brakującej kolumny `Y` z wartościami początkowymi -> działa poprawnie
-    df_T3['Y'] = df_T3['Base_S']
+    # Dodawanie brakującej kolumny `Sales` z wartościami początkowymi -> działa poprawnie
+    df_T3['Sales'] = df_T3['Base_S']
     for sp_key in Sp_x.keys():
-        df_T3['Y'] += df_T3[f'Sp_{sp_key[-2:]}'] * df_T3[f'F_co_{sp_key[-2:]}']
+        df_T3['Sales'] += df_T3[f'Sp_{sp_key[-2:]}'] * df_T3[f'F_co_{sp_key[-2:]}']
 
     # Dodawanie kolumn `DMA1_Sp_x1` zgodnie ze słownikiem DMA_dict -> działa poprawnie
     reve_rate_copy = DMA_reve_rate.copy() 
@@ -118,12 +118,12 @@ def Data_T3(base_sales_total, periods, Sp_x, marketing_dict, DMA_dict):
         for dma_key in DMA_dict.keys(): 
             df_T3[f'{dma_key}_R_co_{sp_key[-2:]}'] = df_T3[f'{dma_key}_Inc_rev'] / df_T3[f'{dma_key}_{sp_key}']
 
-    # Dodawanie kolumn `Y_DMA` dla każdego DMA
+    # Dodawanie kolumn `Sales_DMA` dla każdego DMA
     for dma_key in DMA_dict.keys():
-        df_T3[f'Y_{dma_key}'] = df_T3[f'{dma_key}_BS']
+        df_T3[f'Sales_{dma_key}'] = df_T3[f'{dma_key}_BS']
         for sp_key in Sp_x.keys():
-            df_T3[f'Y_{dma_key}'] += df_T3[f'F_co_{sp_key[-2:]}'] * df_T3[f'{dma_key}_Sp_{sp_key[-2:]}']
-            df_T3[f'Y_{dma_key}'] += df_T3[f'{dma_key}_R_co_{sp_key[-2:]}'] * df_T3[f'{dma_key}_Sp_{sp_key[-2:]}']
+            df_T3[f'Sales_{dma_key}'] += df_T3[f'F_co_{sp_key[-2:]}'] * df_T3[f'{dma_key}_Sp_{sp_key[-2:]}']
+            df_T3[f'Sales_{dma_key}'] += df_T3[f'{dma_key}_R_co_{sp_key[-2:]}'] * df_T3[f'{dma_key}_Sp_{sp_key[-2:]}']
 
     # Zapis do pliku Excel
     df_T3.to_excel('Data_T3.xlsx', index=True)
