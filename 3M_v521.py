@@ -213,9 +213,9 @@ if st.button("Run Symulation", type="primary"):
     df_T4_s = pd.read_excel('Data_T4.xlsx', index_col=0)
     sp_columns = [col for col in df_T4_s.columns if col.startswith('Sp_')]
     sp_columns = sp_columns[:5]
-    y_columns = ['Base_S', 'Inc_reve', 'Y'] + sp_columns
+    y_columns = ['Base_S', 'Inc_reve', 'Sales'] + sp_columns
     
-    base_color_map = {'Base_S': '#636EFA', 'Inc_reve': '#00CC96', 'Y': '#FFD700',
+    base_color_map = {'Base_S': '#636EFA', 'Inc_reve': '#00CC96', 'Sales': '#FFD700',
         'Sp_TV': '#EF553B', 'Sp_Facebook': '#AB63FA', 'Sp_Onet': '#FFA15A', 'Sp_Wp': '#19D3F3', 'Sp_Twiter': '#F6BE00'}
     
     new_sp_colors = {sp_columns[i]: list(base_color_map.values())[3 + i % (len(base_color_map) - 3)] for i in range(len(sp_columns))}
@@ -245,12 +245,12 @@ if st.button("Run DMA Chart"):
     # Ogranicz liczbę kolumn Sp_ do 4
     sp_columns = sp_columns[:5]   
     # Zbierz wszystkie kolumny do wykresu
-    y_columns = [f'{DMA}_BS', f'{DMA}_Inc_rev', f'Y_{DMA}'] + sp_columns  
+    y_columns = [f'{DMA}_BS', f'{DMA}_Inc_rev', f'Sales_{DMA}'] + sp_columns  
     # Zdefiniuj mapę kolorów bazując na poprzednich
     base_color_map = {
                 f'{DMA}_BS': '#1f77b4',  # niebieski
                 f'{DMA}_Inc_rev': '#ff7f0e',  # pomarańczowy
-                f'Y_{DMA}': '#2ca02c',  # zielony
+                f'Sales_{DMA}': '#2ca02c',  # zielony
                 f'{DMA}_Sp_TV': '#d62728',  # czerwony
                 f'{DMA}_Sp_Facebook': '#9467bd',  # fioletowy
                 f'{DMA}_Sp_Onet': '#8c564b',  # brązowy
