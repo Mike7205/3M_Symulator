@@ -237,9 +237,8 @@ st.subheader('DMA Chart', divider='red')
 DMA = st.radio('', list(DMA_dict.values()), horizontal=True)
 if st.button("Run DMA Chart"):    
     # Tworzenie tabeli wejściowej na podstawie wybranego miasta
-    df_T4_source = pd.read_excel('Data_T4.xlsx', index_col=0)
-    df_T4_DMA = df_T4_source[['Time Period', f'{DMA}_BS', f'{DMA}_Inc_rev', f'Sales_{DMA}'] + 
-        [col for col in df_T4_source.columns if col.startswith(f'{DMA}_Sp_')]]  
+    df_T4_s2 = pd.read_excel('Data_T4.xlsx', index_col=0)
+    df_T4_DMA = df_T4_s2[['Time Period', f'{DMA}_BS', f'{DMA}_Inc_rev', f'Sales_{DMA}'] + [col for col in df_T4_s2.columns if col.startswith(f'{DMA}_Sp_')]]  
     # Zidentyfikuj kolumny, które mają prefiks "Sp_"
     sp_columns = [col for col in df_T4_DMA.columns if col.startswith(f'{DMA}_Sp_')]   
     # Ogranicz liczbę kolumn Sp_ do 4
