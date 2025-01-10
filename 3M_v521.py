@@ -228,7 +228,8 @@ if st.button("Run Symulation", type="primary"):
 
 show_table = st.checkbox('Czy chcesz zobaczyć tabele z danymi?')
 if show_table:
-    for_df = df_T4_s.T.applymap(lambda x: f"{float(x):,.2f}" if isinstance(x, (int, float)) else x)
+    df_T4_s1 = pd.read_excel('Data_T4.xlsx')
+    for_df = df_T4_s1.T.applymap(lambda x: f"{float(x):,.2f}" if isinstance(x, (int, float)) else x)
     st.markdown(for_df.to_html(escape=False, index=True), unsafe_allow_html=True)
 
 # Analiza DMA
