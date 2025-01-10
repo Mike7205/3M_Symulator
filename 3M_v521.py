@@ -169,7 +169,7 @@ col1, col2 = st.columns([0.5, 0.5])
 
 with col1:
     base_sales_total = st.number_input('Base total Sales', value=150000000, key="<k14>")
-    periods = st.slider('Budujemy symulacje na x okresów?', 1, 1, 120, key="<rsi_window>")
+    periods = st.slider('Data for x periods?', 1, 1, 156, key="<rsi_window>")
     st.write('Ustawiamy sezonowość')
     amplitude = st.slider('Desire function amplitude?', 1, 1, 200, key = "<comm2>")
     mean = st.slider('Desire function mean?', 1, 1, 200, key = "<comm3>")
