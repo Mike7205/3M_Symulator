@@ -126,7 +126,7 @@ def Data_T3(base_sales_total, periods, Sp_x, marketing_dict, DMA_dict):
             df_T3[f'Y_{dma_key}'] += df_T3[f'{dma_key}_R_co_{sp_key[-2:]}'] * df_T3[f'{dma_key}_Sp_{sp_key[-2:]}']
 
     # Zapis do pliku Excel
-    df_T3.to_excel('Data_T31.xlsx', index=True)
+    df_T3.to_excel('Data_T3.xlsx', index=True)
     zamien_nazwy_wierszy(df_T3)
     #return df_T31.T
 
@@ -220,7 +220,7 @@ if st.button("Run Symulation", type="primary"):
     
     new_sp_colors = {sp_columns[i]: list(base_color_map.values())[3 + i % (len(base_color_map) - 3)] for i in range(len(sp_columns))}
     color_discrete_map = {**base_color_map, **new_sp_colors}
-    fig_base = px.area(df_T4_s, x='Time Period', y=y_columns, color_discrete_map=color_discrete_map, width=1500, height=400)
+    fig_base = px.area(df_T4_s, x='Time Period', y=y_columns, color_discrete_map=color_discrete_map, width=2000, height=600)
     fig_base.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Yi, Base_S & Marketing Spendings')
     fig_base.update_layout(showlegend=True)
     
@@ -261,7 +261,7 @@ if st.button("Run DMA Chart"):
     # Połącz mapy kolorów
     color_discrete_map = {**base_color_map, **new_sp_colors}   
     # Tworzenie wykresu
-    fig_DMA = px.area(df_T4_DMA, x='Time Period', y=y_columns, color_discrete_map=color_discrete_map, width=1500, height=500)
+    fig_DMA = px.area(df_T4_DMA, x='Time Period', y=y_columns, color_discrete_map=color_discrete_map, width=2000, height=600)
     fig_DMA.update_layout(xaxis_title='Time Period', yaxis_title='Values', title=f'Analiza {DMA}: Yi, Base_S & Marketing Spendings for {DMA}')
     fig_DMA.update_layout(showlegend=True)    
     st.plotly_chart(fig_DMA)
