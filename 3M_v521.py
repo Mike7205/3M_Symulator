@@ -13,6 +13,16 @@ Sp_x = {'Sp_x1':'3500000','Sp_x2':'2500000','Sp_x3':'1500000','Sp_x4':'1000000',
 DMA_dict = {'DMA1':'Warszawa','DMA2':'Kraków','DMA3':'Poznań','DMA4':'Gdańsk', 'DMA5':'Katowice'}
 DMA_reve_rate = [0.2, 0.15, 0.3, 0.1, 0.25]
 
+# Generowanie Incentive Revenue Rate krzywą Gaussa z szumem
+def generuj_inc_rev_rate(periods, amplitude, frequency, noise_level):
+    czas = np.arange(periods)
+    smooth_noise = np.cumsum(np.random.normal(0, noise_level, periods))  # Zastosowanie skumulowanego szumu Gaussa
+    inc_rev_rate = amplitude * (np.sin(czas / 10 * frequency) + np.cos(czas / 5 * frequency)) + smooth_noise
+    
+    inc_rev_rate = (inc_rev_rate - np.min(inc_rev_rate)) / (np.max(inc_rev_rate) - np.min(inc_rev_rate))  # Skaluje do zakresu [0, 1]
+    inc_rev_rate = inc_rev_rate / np.sum(inc_rev_rate)  # Normalizuje, aby suma wynosiła 1
+    return inc_rev_rate
+
 # Generowanie w oparciu o krzywą Gaussa
 def generuj_sezonowosc(periods, amplitude, mean, std_dev):
     global sezonowosc
@@ -54,7 +64,7 @@ def Data_T3(base_sales_total, periods, Sp_x, marketing_dict, DMA_dict):
             'Time Period': [f'P{i+1}' for i in range(periods)],
             'Base_S_Plan_rate': sezonowosc,
             'Base_S': sezonowosc * base_sales_total,
-            'Inc_rev_rate': random_gen(periods),
+            'Inc_rev_rate': generuj_inc_rev_rate(periods, amplitude, frequency, noise_level),
     })
     # Obliczanie wartości w kolumnie 'Inc_reve' jako iloczyn 'Base_S' i 'Inc_rev_rate' 
     df_T3['Inc_reve'] = df_T3['Base_S'] * df_T3['Inc_rev_rate']
@@ -124,8 +134,8 @@ def Data_T3(base_sales_total, periods, Sp_x, marketing_dict, DMA_dict):
         for sp_key in Sp_x.keys():
             first_calculation = df_T3[f'F_co_{sp_key[-2:]}'] * df_T3[f'{dma_key}_Sp_{sp_key[-2:]}']
             second_calculation = df_T3[f'{dma_key}_R_co_{sp_key[-2:]}'] * df_T3[f'{dma_key}_Sp_{sp_key[-2:]}']
-            df_T3[f'Sales_{dma_key}'] += first_calculation + second_calculation 
-    
+            df_T3[f'Sales_{dma_key}'] += first_calculation + second_calculation   
+
     # Zapis do pliku Excel
     df_T3.to_excel('Data_T3.xlsx', index=True)
     zamien_nazwy_wierszy(df_T3)
@@ -181,8 +191,18 @@ with col1:
     fig_ = px.line(df_sezon, x='Time Period', y=['Forecast'], color_discrete_map={
                     'Forecast': '#636EFA'}, width=1000, height=300) 
     fig_.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Sales Rate Forecast by Gausse')    
-    #fig_.update_layout(showlegend=True)
     st.plotly_chart(fig_)
+    st.write('Ustawiamy Incentive Revenu Rate')
+    amplitude = st.slider('Desire function amplitude?', min_value=0.1, max_value=10.0, value=1.0, step=0.1, key="<com2>")
+    frequency = st.slider('Desire function frequency?', min_value=0.1, max_value=10.0, value=1.0, step=0.1, key="<com3>")
+    noise_level = st.slider('Desire function noise_level?', min_value=0.1, max_value=10.0, value=1.0, step=0.1, key="<com4>")
+    df_inc_rev_rate = pd.DataFrame(generuj_inc_rev_rate(periods, amplitude, frequency, noise_level))
+    df_inc_rev_rate = df_inc_rev_rate.rename(columns={0: 'Forecast'})
+    df_inc_rev_rate['Time Period'] = range(1, periods + 1)   
+    fig_1 = px.line(df_inc_rev_rate, x='Time Period', y=['Forecast'], color_discrete_map={
+                    'Forecast': '#FF8C00'}, width=1000, height=300) 
+    fig_1.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Incentive Revenu Rate Forecast by X-Function')    
+    st.plotly_chart(fig_1)
     
 with col2:
     st.write('Marketing Initiatives')
@@ -265,4 +285,3 @@ if st.button("Run DMA Chart"):
     fig_DMA.update_layout(xaxis_title='Time Period', yaxis_title='Values', title=f'Analiza {DMA}: Yi, Base_S & Marketing Spendings for {DMA}')
     fig_DMA.update_layout(showlegend=True)    
     st.plotly_chart(fig_DMA)
-
