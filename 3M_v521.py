@@ -89,7 +89,7 @@ def Data_T3(base_sales_total, periods, Sp_x, marketing_dict, DMA_dict):
     # Dodawanie brakujących kolumn `Sp_r_x` -> to działa dobrze
     for key in Sp_x.keys():
         column_name = f'Sp_{key[-2:]}'
-        df_T3[f'Sp_r_{key[-2:]}'] = random_gen_rev(periods)
+        df_T3[f'Sp_r_{key[-2:]}'] = generuj_inc_rev_rate(periods, amplitude, frequency, noise_level)
 
     # Dystrybucja wartości w kolumnach Inc_reve na poszczególne DMA kolumny -> przebudowane działa poprawnie
     reve_rate_copy = DMA_reve_rate.copy()
