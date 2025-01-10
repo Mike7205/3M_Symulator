@@ -122,9 +122,10 @@ def Data_T3(base_sales_total, periods, Sp_x, marketing_dict, DMA_dict):
     for dma_key in DMA_dict.keys():
         df_T3[f'Sales_{dma_key}'] = df_T3[f'{dma_key}_BS']
         for sp_key in Sp_x.keys():
-            df_T3[f'Sales_{dma_key}'] += df_T3[f'F_co_{sp_key[-2:]}'] * df_T3[f'{dma_key}_Sp_{sp_key[-2:]}']
-            df_T3[f'Sales_{dma_key}'] += df_T3[f'{dma_key}_R_co_{sp_key[-2:]}'] * df_T3[f'{dma_key}_Sp_{sp_key[-2:]}']
-
+            first_calculation = df_T3[f'F_co_{sp_key[-2:]}'] * df_T3[f'{dma_key}_Sp_{sp_key[-2:]}']
+            second_calculation = df_T3[f'{dma_key}_R_co_{sp_key[-2:]}'] * df_T3[f'{dma_key}_Sp_{sp_key[-2:]}']
+            df_T3[f'Sales_{dma_key}'] += first_calculation + second_calculation 
+    
     # Zapis do pliku Excel
     df_T3.to_excel('Data_T3.xlsx', index=True)
     zamien_nazwy_wierszy(df_T3)
