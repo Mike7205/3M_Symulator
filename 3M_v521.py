@@ -253,7 +253,7 @@ if st.button("Run Symulation", type="primary"):
     color_discrete_map = {**base_color_map, **new_sp_colors}
     fig_base = px.area(df_T4_s, x='Time Period', y=y_columns, color_discrete_map=color_discrete_map, width=2000, height=600)
     fig_base.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Sales, Base_S & Marketing Spendings')
-    fig_base.update_layout(showlegend=True)Sales
+    fig_base.update_layout(showlegend=True)
     
     st.plotly_chart(fig_base)
 
