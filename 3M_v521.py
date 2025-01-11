@@ -9,16 +9,15 @@ from datetime import datetime, date
 # Ustawienia strony
 st.set_page_config(layout="wide")
 marketing_dict = {'_x1': '_TV', '_x2': '_Facebook', '_x3': '_Onet', '_x4': '_Wp','_x5':'_GW'}
-Sp_x = {'Sp_x1':'3500000','Sp_x2':'2500000','Sp_x3':'1500000','Sp_x4':'1000000','Sp_x5':'1500000'}
+Sp_x = {'Sp_x1':'35000000','Sp_x2':'25000000','Sp_x3':'15000000','Sp_x4':'10000000','Sp_x5':'15000000'}
 DMA_dict = {'DMA1':'Warszawa','DMA2':'Kraków','DMA3':'Poznań','DMA4':'Gdańsk', 'DMA5':'Katowice'}
-DMA_reve_rate = [0.2, 0.15, 0.3, 0.1, 0.25] #[0.18, 0,13, 0.27, 0.19, 0.23]
+DMA_reve_rate = [0.18, 0,13, 0.27, 0.19, 0.23] #[0.2, 0.15, 0.3, 0.1, 0.25]  # golden key :-)
 dzisiaj = datetime.now().strftime('%d%m')
 # Generowanie Incentive Revenue Rate krzywą Gaussa z szumem
 def generuj_inc_rev_rate(periods, amplitude, frequency, noise_level):
     czas = np.arange(periods)
     smooth_noise = np.cumsum(np.random.normal(0, noise_level, periods))  # Zastosowanie skumulowanego szumu Gaussa
     inc_rev_rate = amplitude * (np.sin(czas / 10 * frequency) + np.cos(czas / 5 * frequency)) + smooth_noise
-    
     #inc_rev_rate = (inc_rev_rate - np.min(inc_rev_rate)) / (np.max(inc_rev_rate) - np.min(inc_rev_rate))  # Skaluje do zakresu [0, 1]
     #inc_rev_rate = inc_rev_rate / np.sum(inc_rev_rate)  # Normalizuje, aby suma wynosiła 1
     return inc_rev_rate
