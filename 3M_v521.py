@@ -11,7 +11,7 @@ st.set_page_config(layout="wide")
 marketing_dict = {'_x1': '_TV', '_x2': '_Facebook', '_x3': '_Onet', '_x4': '_Wp','_x5':'_GW'}
 Sp_x = {'Sp_x1':'3500000','Sp_x2':'2500000','Sp_x3':'1500000','Sp_x4':'1000000','Sp_x5':'1500000'}
 DMA_dict = {'DMA1':'Warszawa','DMA2':'Kraków','DMA3':'Poznań','DMA4':'Gdańsk', 'DMA5':'Katowice'}
-DMA_reve_rate = [0.18, 0,13, 0.27, 0.19, 0.23] #[0.2, 0.15, 0.3, 0.1, 0.25]
+DMA_reve_rate = [0.2, 0.15, 0.3, 0.1, 0.25] #[0.18, 0,13, 0.27, 0.19, 0.23] 
 
 # Generowanie Incentive Revenue Rate krzywą Gaussa z szumem
 def generuj_inc_rev_rate(periods, amplitude, frequency, noise_level):
