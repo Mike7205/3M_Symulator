@@ -192,7 +192,7 @@ with col1:
                     'Forecast': '#636EFA'}, width=1000, height=300) 
     fig_.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Sales Rate Forecast by Gausse')    
     st.plotly_chart(fig_)
-    st.write('Ustawiamy Incentive Revenu Rate')
+    st.write('Incentive Revenu Rate Configuration')
     amplitude = st.slider('Desire function amplitude?', min_value=0.1, max_value=10.0, value=1.0, step=0.1, key="<com2>")
     frequency = st.slider('Desire function frequency?', min_value=0.1, max_value=10.0, value=1.0, step=0.1, key="<com3>")
     noise_level = st.slider('Desire function noise_level?', min_value=0.1, max_value=10.0, value=1.0, step=0.1, key="<com4>")
