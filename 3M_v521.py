@@ -247,7 +247,7 @@ if st.button("Run Symulation", type="primary"):
     
     st.plotly_chart(fig_base)
 
-show_table = st.checkbox('Czy chcesz zobaczyć tabele z danymi?')
+show_table = st.checkbox('Do you want to see data table?')
 if show_table:
     df_T4_s1 = pd.read_excel('Data_T4.xlsx', index_col=0)
     for_df = df_T4_s1.T.applymap(lambda x: f"{float(x):,.2f}" if isinstance(x, (int, float)) else x)
