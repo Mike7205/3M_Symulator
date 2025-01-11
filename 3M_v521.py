@@ -175,7 +175,7 @@ def update_dict(old_key, new_key):
         marketing_dict[new_key] = marketing_dict.pop(old_key)
 
 # Wyświetlanie formularza
-st.subheader('Konfiguracja Parametrów', divider='blue')
+st.subheader('Parameter Configuration', divider='blue')
 col1, col2 = st.columns([0.5, 0.5])
 
 with col1:
@@ -226,7 +226,7 @@ with col2:
     
 #submitted = st.form_submit_button("Run Symulation")
 
-st.subheader('Dane symulacyjne', divider='red')
+st.subheader('Symulation Data', divider='red')
 
 if st.button("Run Symulation", type="primary"):
     Data_T3(base_sales_total, periods, Sp_x, marketing_dict, DMA_dict)
@@ -242,7 +242,7 @@ if st.button("Run Symulation", type="primary"):
     new_sp_colors = {sp_columns[i]: list(base_color_map.values())[3 + i % (len(base_color_map) - 3)] for i in range(len(sp_columns))}
     color_discrete_map = {**base_color_map, **new_sp_colors}
     fig_base = px.area(df_T4_s, x='Time Period', y=y_columns, color_discrete_map=color_discrete_map, width=2000, height=600)
-    fig_base.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Yi, Base_S & Marketing Spendings')
+    fig_base.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Total Sales, Base_S & Marketing Spendings')
     fig_base.update_layout(showlegend=True)
     
     st.plotly_chart(fig_base)
@@ -282,6 +282,6 @@ if st.button("Run DMA Chart"):
     color_discrete_map = {**base_color_map, **new_sp_colors}   
     # Tworzenie wykresu
     fig_DMA = px.area(df_T4_DMA, x='Time Period', y=y_columns, color_discrete_map=color_discrete_map, width=2000, height=600)
-    fig_DMA.update_layout(xaxis_title='Time Period', yaxis_title='Values', title=f'Analiza {DMA}: Yi, Base_S & Marketing Spendings for {DMA}')
+    fig_DMA.update_layout(xaxis_title='Time Period', yaxis_title='Values', title=f'Analiza {DMA}: DMA Sales, Base_S & Marketing Spendings for {DMA}')
     fig_DMA.update_layout(showlegend=True)    
     st.plotly_chart(fig_DMA)
