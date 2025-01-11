@@ -176,13 +176,13 @@ def update_dict(old_key, new_key):
         marketing_dict[new_key] = marketing_dict.pop(old_key)
 
 # Wyświetlanie formularza
-st.subheader('Konfiguracja Parametrów', divider='blue')
+st.subheader('Parameters Configuration', divider='blue')
 col1, col2 = st.columns([0.5, 0.5])
 
 with col1:
     base_sales_total = st.number_input('Base total Sales', value=150000000, key="<k14>")
     periods = st.slider('Data for x periods?', 1, 1, 156, key="<rsi_window>")
-    st.write('Ustawiamy sezonowość')
+    st.write('Seasonality Trend Function')
     amplitude = st.slider('Desire function amplitude?', 1, 1, 200, key = "<comm2>")
     mean = st.slider('Desire function mean?', 1, 1, 200, key = "<comm3>")
     std_dev = st.slider('Desire function std_dev?', 1, 1, 200, key = "<comm4>")
@@ -193,7 +193,7 @@ with col1:
                     'Forecast': '#636EFA'}, width=1000, height=300) 
     fig_.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Sales Rate Forecast by Gausse')    
     st.plotly_chart(fig_)
-    st.write('Ustawiamy Incentive Revenu Rate')
+    st.write('Incentive Revenu Rate Function')
     amplitude = st.slider('Desire function amplitude?', min_value=0.1, max_value=10.0, value=1.0, step=0.1, key="<com2>")
     frequency = st.slider('Desire function frequency?', min_value=0.1, max_value=10.0, value=1.0, step=0.1, key="<com3>")
     noise_level = st.slider('Desire function noise_level?', min_value=0.1, max_value=10.0, value=1.0, step=0.1, key="<com4>")
@@ -236,11 +236,11 @@ with col2:  # Opcja zapisywania wszystkich słowników do plików excel
     
 #submitted = st.form_submit_button("Run Symulation")
 
-st.subheader('Dane symulacyjne', divider='red')
+st.subheader('Data Symulation', divider='red')
 
 if st.button("Run Symulation", type="primary"):
     Data_T3(base_sales_total, periods, Sp_x, marketing_dict, DMA_dict)
-    st.subheader('Wizualizacja Symulacji na poziomie Y', divider='red')
+    st.subheader('Total Sales decomposition chart', divider='red')
     df_T4_s = pd.read_excel('Data_T4.xlsx', index_col=0)
     sp_columns = [col for col in df_T4_s.columns if col.startswith('Sp_')]
     sp_columns = sp_columns[:5]
@@ -257,14 +257,14 @@ if st.button("Run Symulation", type="primary"):
     
     st.plotly_chart(fig_base)
 
-show_table = st.checkbox('Czy chcesz zobaczyć tabele z danymi?')
+show_table = st.checkbox('Do you want to see data table ?')
 if show_table:
     df_T4_s1 = pd.read_excel('Data_T4.xlsx', index_col=0)
     for_df = df_T4_s1.T.applymap(lambda x: f"{float(x):,.2f}" if isinstance(x, (int, float)) else x)
     st.markdown(for_df.to_html(escape=False, index=True), unsafe_allow_html=True)
 
 # Analiza DMA
-st.subheader('DMA Chart', divider='red')
+st.subheader('DMA Sales Decomposition Chart', divider='red')
 DMA = st.radio('', list(DMA_dict.values()), horizontal=True)
 if st.button("Run DMA Chart"):    
     # Tworzenie tabeli wejściowej na podstawie wybranego miasta
