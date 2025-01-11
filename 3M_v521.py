@@ -137,6 +137,7 @@ def Data_T3(base_sales_total, periods, Sp_x, marketing_dict, DMA_dict):
             df_T3[f'Sales_{dma_key}'] += first_calculation + second_calculation   
 
     # Zapis do pliku Excel
+    df_T3 = df_T3.replace([np.nan, np.inf, -np.inf], 0)
     df_T3.to_excel('Data_T3.xlsx', index=True)
     zamien_nazwy_wierszy(df_T3)
     #return df_T31.T
@@ -232,7 +233,6 @@ if st.button("Run Symulation", type="primary"):
     Data_T3(base_sales_total, periods, Sp_x, marketing_dict, DMA_dict)
     st.subheader('Total Sales Simulation', divider='red')
     df_T4_s = pd.read_excel('Data_T4.xlsx', index_col=0)
-    df_T4_s = df_T4_s.replace([np.nan, np.inf, -np.inf], 0)
     sp_columns = [col for col in df_T4_s.columns if col.startswith('Sp_')]
     sp_columns = sp_columns[:5]
     y_columns = ['Base_S', 'Inc_reve', 'Sales'] + sp_columns
@@ -260,7 +260,6 @@ DMA = st.radio('', list(DMA_dict.values()), horizontal=True)
 if st.button("Run DMA Chart"):    
     # Tworzenie tabeli wejściowej na podstawie wybranego miasta
     df_T4_s2 = pd.read_excel('Data_T4.xlsx', index_col=0)
-    df_T4_s2 = df_T4_s2.replace([np.nan, np.inf, -np.inf], 0)
     df_T4_DMA = df_T4_s2[['Time Period', f'{DMA}_BS', f'{DMA}_Inc_rev', f'Sales_{DMA}'] + [col for col in df_T4_s2.columns if col.startswith(f'{DMA}_Sp_')]]  
     # Zidentyfikuj kolumny, które mają prefiks "Sp_"
     sp_columns = [col for col in df_T4_DMA.columns if col.startswith(f'{DMA}_Sp_')]   
