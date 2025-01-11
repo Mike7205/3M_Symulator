@@ -11,16 +11,16 @@ st.set_page_config(layout="wide")
 marketing_dict = {'_x1': '_TV', '_x2': '_Facebook', '_x3': '_Onet', '_x4': '_Wp','_x5':'_GW'}
 Sp_x = {'Sp_x1':'3500000','Sp_x2':'2500000','Sp_x3':'1500000','Sp_x4':'1000000','Sp_x5':'1500000'}
 DMA_dict = {'DMA1':'Warszawa','DMA2':'Kraków','DMA3':'Poznań','DMA4':'Gdańsk', 'DMA5':'Katowice'}
-DMA_reve_rate = [0.2, 0.15, 0.3, 0.1, 0.25] #[0.18, 0,13, 0.27, 0.19, 0.23] 
-
+DMA_reve_rate = [0.2, 0.15, 0.3, 0.1, 0.25] #[0.18, 0,13, 0.27, 0.19, 0.23]
+dzisiaj = datetime.now().strftime('%d%m')
 # Generowanie Incentive Revenue Rate krzywą Gaussa z szumem
 def generuj_inc_rev_rate(periods, amplitude, frequency, noise_level):
     czas = np.arange(periods)
     smooth_noise = np.cumsum(np.random.normal(0, noise_level, periods))  # Zastosowanie skumulowanego szumu Gaussa
     inc_rev_rate = amplitude * (np.sin(czas / 10 * frequency) + np.cos(czas / 5 * frequency)) + smooth_noise
     
-    inc_rev_rate = (inc_rev_rate - np.min(inc_rev_rate)) / (np.max(inc_rev_rate) - np.min(inc_rev_rate))  # Skaluje do zakresu [0, 1]
-    inc_rev_rate = inc_rev_rate / np.sum(inc_rev_rate)  # Normalizuje, aby suma wynosiła 1
+    #inc_rev_rate = (inc_rev_rate - np.min(inc_rev_rate)) / (np.max(inc_rev_rate) - np.min(inc_rev_rate))  # Skaluje do zakresu [0, 1]
+    #inc_rev_rate = inc_rev_rate / np.sum(inc_rev_rate)  # Normalizuje, aby suma wynosiła 1
     return inc_rev_rate
 
 # Generowanie w oparciu o krzywą Gaussa
@@ -110,9 +110,9 @@ def Data_T3(base_sales_total, periods, Sp_x, marketing_dict, DMA_dict):
         df_T3[f'F_co_{key[-2:]}'] = df_T3['Inc_reve'] / df_T3[column_name]
 
     # Dodawanie brakującej kolumny `Sales` z wartościami początkowymi -> działa poprawnie
-    df_T3['Sales'] = df_T3['Base_S']
+    #df_T3['Sales'] = df_T3['Base_S']
     for sp_key in Sp_x.keys():
-        df_T3['Sales'] += df_T3[f'Sp_{sp_key[-2:]}'] * df_T3[f'F_co_{sp_key[-2:]}']
+        df_T3['Sales'] = df_T3['Base_S'] + (df_T3[f'Sp_{sp_key[-2:]}'] * df_T3[f'F_co_{sp_key[-2:]}'])
 
     # Dodawanie kolumn `DMA1_Sp_x1` zgodnie ze słownikiem DMA_dict -> działa poprawnie
     reve_rate_copy = DMA_reve_rate.copy() 
@@ -130,11 +130,11 @@ def Data_T3(base_sales_total, periods, Sp_x, marketing_dict, DMA_dict):
 
     # Dodawanie kolumn `Sales_DMA` dla każdego DMA
     for dma_key in DMA_dict.keys():
-        df_T3[f'Sales_{dma_key}'] = df_T3[f'{dma_key}_BS']
+        #df_T3[f'Sales_{dma_key}'] = df_T3[f'{dma_key}_BS']
         for sp_key in Sp_x.keys():
             first_calculation = df_T3[f'F_co_{sp_key[-2:]}'] * df_T3[f'{dma_key}_Sp_{sp_key[-2:]}']
             second_calculation = df_T3[f'{dma_key}_R_co_{sp_key[-2:]}'] * df_T3[f'{dma_key}_Sp_{sp_key[-2:]}']
-            df_T3[f'Sales_{dma_key}'] += first_calculation + second_calculation   
+            df_T3[f'Sales_{dma_key}'] = df_T3[f'{dma_key}_BS'] + (first_calculation + second_calculation)  
 
     # Zapis do pliku Excel
     df_T3 = df_T3.replace([np.nan, np.inf, -np.inf], 0)
@@ -164,6 +164,7 @@ def zamien_nazwy_wierszy(df_T31):
     df_T4 = df_T31.rename(columns=zamien_koncowke)
     df_T4 = df_T4.rename(columns=zamien_prefiks)
     df_T4 = df_T4.loc[:, ~df_T4.columns.str.startswith('Unnamed')]
+    df_T4 = df_T4.replace([np.nan, np.inf, -np.inf], 0)
     df_T4.to_excel('Data_T4.xlsx', index=True)
     
     return df_T4
@@ -176,16 +177,16 @@ def update_dict(old_key, new_key):
         marketing_dict[new_key] = marketing_dict.pop(old_key)
 
 # Wyświetlanie formularza
-st.subheader('Parameter Configuration', divider='blue')
+st.subheader('Konfiguracja Parametrów', divider='blue')
 col1, col2 = st.columns([0.5, 0.5])
 
 with col1:
     base_sales_total = st.number_input('Base total Sales', value=150000000, key="<k14>")
     periods = st.slider('Data for x periods?', 1, 1, 156, key="<rsi_window>")
-    st.write('Seasonality Configuration')
-    amplitude = st.slider('Desire function amplitude?', 1, 1, 100, key = "<comm2>")
-    mean = st.slider('Desire function mean?', 1, 1, 100, key = "<comm3>")
-    std_dev = st.slider('Desire function std_dev?', 1, 1, 100, key = "<comm4>")
+    st.write('Ustawiamy sezonowość')
+    amplitude = st.slider('Desire function amplitude?', 1, 1, 200, key = "<comm2>")
+    mean = st.slider('Desire function mean?', 1, 1, 200, key = "<comm3>")
+    std_dev = st.slider('Desire function std_dev?', 1, 1, 200, key = "<comm4>")
     df_sezon = pd.DataFrame(generuj_sezonowosc(periods, amplitude, mean, std_dev))
     df_sezon = df_sezon.rename(columns={0: 'Forecast'})
     df_sezon['Time Period'] = range(1, periods + 1)
@@ -193,7 +194,7 @@ with col1:
                     'Forecast': '#636EFA'}, width=1000, height=300) 
     fig_.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Sales Rate Forecast by Gausse')    
     st.plotly_chart(fig_)
-    st.write('Incentive Revenu Rate Configuration')
+    st.write('Ustawiamy Incentive Revenu Rate')
     amplitude = st.slider('Desire function amplitude?', min_value=0.1, max_value=10.0, value=1.0, step=0.1, key="<com2>")
     frequency = st.slider('Desire function frequency?', min_value=0.1, max_value=10.0, value=1.0, step=0.1, key="<com3>")
     noise_level = st.slider('Desire function noise_level?', min_value=0.1, max_value=10.0, value=1.0, step=0.1, key="<com4>")
@@ -205,84 +206,94 @@ with col1:
     fig_1.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Incentive Revenu Rate Forecast by X-Function')    
     st.plotly_chart(fig_1)
     
-with col2:
+with col2:  # Opcja zapisywania wszystkich słowników do plików excel
     st.write('Marketing Initiatives')
     df_marketing_dict = pd.DataFrame(marketing_dict, index=[0])
     edited_df_marketing_dict = st.data_editor(df_marketing_dict)
     marketing_dict = edited_df_marketing_dict.iloc[0].to_dict()
     st.write('Updated Marketing Initiatives List')
     st.write(marketing_dict)
+    marketing_dict_ok = pd.DataFrame(marketing_dict, index=[0])
+    marketing_dict_filename = f'marketing_dict_{dzisiaj}.xlsx'
+    marketing_dict_ok.to_excel(marketing_dict_filename, index=True)
     st.write('Marketing Budget Frame')
     df_spx = pd.DataFrame(Sp_x, index=[0])
     edited_df_spx = st.data_editor(df_spx)
     Sp_x = edited_df_spx.iloc[0].to_dict()
     st.write('Updated Marketing Budget Frame')
     st.write(Sp_x)
+    Sp_x_ok = pd.DataFrame(Sp_x, index=[0])
+    Sp_x_filename = f'Sp_x_{dzisiaj}.xlsx'
+    Sp_x_ok.to_excel(Sp_x_filename, index=True)
     st.write('DMA List')
     df_DMA_dict = pd.DataFrame(DMA_dict, index=[0])
     edited_df_DMA_dict = st.data_editor(df_DMA_dict)
     DMA_dict = edited_df_DMA_dict.iloc[0].to_dict()
     st.write('Updated DMA List')
     st.write(DMA_dict)
+    DMA_dict_ok = pd.DataFrame(DMA_dict, index=[0])
+    DMA_dict_filename = f'DMA_dict_{dzisiaj}.xlsx'
+    DMA_dict_ok.to_excel(DMA_dict_filename, index=True)
     
 #submitted = st.form_submit_button("Run Symulation")
 
-st.subheader('Data Symulation ', divider='red')
+st.subheader('Dane symulacyjne', divider='red')
 
 if st.button("Run Symulation", type="primary"):
     Data_T3(base_sales_total, periods, Sp_x, marketing_dict, DMA_dict)
-    st.subheader('Total Sales Simulation', divider='red')
+    st.subheader('Wizualizacja Symulacji na poziomie Y', divider='red')
     df_T4_s = pd.read_excel('Data_T4.xlsx', index_col=0)
     sp_columns = [col for col in df_T4_s.columns if col.startswith('Sp_')]
     sp_columns = sp_columns[:5]
-    y_columns = ['Base_S', 'Inc_reve', 'Sales'] + sp_columns
+    y_columns = ['Base_S', 'Sales'] + sp_columns  #'Inc_reve',
     
-    base_color_map = {'Base_S': '#636EFA', 'Inc_reve': '#00CC96', 'Sales': '#FFD700',
-        'Sp_TV': '#EF553B', 'Sp_Facebook': '#AB63FA', 'Sp_Onet': '#FFA15A', 'Sp_Wp': '#19D3F3', 'Sp_Twiter': '#F6BE00'}
+    base_color_map = {'Base_S': '#636EFA',  'Sales': '#FFD700',
+        'Sp_TV': '#EF553B', 'Sp_Facebook': '#AB63FA', 'Sp_Onet': '#FFA15A', 'Sp_Wp': '#19D3F3', 'Sp_Twiter': '#F6BE00'} # 'Inc_reve': '#00CC96',
     
     new_sp_colors = {sp_columns[i]: list(base_color_map.values())[3 + i % (len(base_color_map) - 3)] for i in range(len(sp_columns))}
     color_discrete_map = {**base_color_map, **new_sp_colors}
     fig_base = px.area(df_T4_s, x='Time Period', y=y_columns, color_discrete_map=color_discrete_map, width=2000, height=600)
-    fig_base.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Total Sales, Base_S & Marketing Spendings')
+    fig_base.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Yi, Base_S & Marketing Spendings')
     fig_base.update_layout(showlegend=True)
     
     st.plotly_chart(fig_base)
 
-show_table = st.checkbox('Do you want to see data table?')
+show_table = st.checkbox('Czy chcesz zobaczyć tabele z danymi?')
 if show_table:
     df_T4_s1 = pd.read_excel('Data_T4.xlsx', index_col=0)
     for_df = df_T4_s1.T.applymap(lambda x: f"{float(x):,.2f}" if isinstance(x, (int, float)) else x)
     st.markdown(for_df.to_html(escape=False, index=True), unsafe_allow_html=True)
 
 # Analiza DMA
-st.subheader('DMA Sales Simulation', divider='red')
+st.subheader('DMA Chart', divider='red')
 DMA = st.radio('', list(DMA_dict.values()), horizontal=True)
 if st.button("Run DMA Chart"):    
     # Tworzenie tabeli wejściowej na podstawie wybranego miasta
     df_T4_s2 = pd.read_excel('Data_T4.xlsx', index_col=0)
-    df_T4_DMA = df_T4_s2[['Time Period', f'{DMA}_BS', f'{DMA}_Inc_rev', f'Sales_{DMA}'] + [col for col in df_T4_s2.columns if col.startswith(f'{DMA}_Sp_')]]  
+    df_T4_DMA = df_T4_s2[['Time Period', f'{DMA}_BS', f'{DMA}_Inc_rev', f'Sales_{DMA}'] + 
+    [col for col in df_T4_s2.columns if col.startswith(f'{DMA}_Sp_')]]  
     # Zidentyfikuj kolumny, które mają prefiks "Sp_"
     sp_columns = [col for col in df_T4_DMA.columns if col.startswith(f'{DMA}_Sp_')]   
     # Ogranicz liczbę kolumn Sp_ do 4
     sp_columns = sp_columns[:5]   
     # Zbierz wszystkie kolumny do wykresu
-    y_columns = [f'{DMA}_BS', f'{DMA}_Inc_rev', f'Sales_{DMA}'] + sp_columns  
+    y_columns = [f'{DMA}_BS',  f'Sales_{DMA}'] + sp_columns  # f'{DMA}_Inc_rev',
     # Zdefiniuj mapę kolorów bazując na poprzednich
     base_color_map = {
                 f'{DMA}_BS': '#1f77b4',  # niebieski
-                f'{DMA}_Inc_rev': '#ff7f0e',  # pomarańczowy
+                
                 f'Sales_{DMA}': '#2ca02c',  # zielony
                 f'{DMA}_Sp_TV': '#d62728',  # czerwony
                 f'{DMA}_Sp_Facebook': '#9467bd',  # fioletowy
                 f'{DMA}_Sp_Onet': '#8c564b',  # brązowy
                 f'{DMA}_Sp_Wp': '#e377c2', # różowy
-                f'{DMA}_Sp_Twiter': '#F6BE00'}        
+                f'{DMA}_Sp_Twiter': '#F6BE00'}        # f'{DMA}_Inc_rev': '#ff7f0e',  # pomarańczowy
     # Przypisz kolory do nowych zmiennych "Sp_" bazując na istniejących kolorach
     new_sp_colors = {sp_columns[i]: list(base_color_map.values())[3 + i % (len(base_color_map) - 3)] for i in range(len(sp_columns))}    
     # Połącz mapy kolorów
     color_discrete_map = {**base_color_map, **new_sp_colors}   
     # Tworzenie wykresu
     fig_DMA = px.area(df_T4_DMA, x='Time Period', y=y_columns, color_discrete_map=color_discrete_map, width=2000, height=600)
-    fig_DMA.update_layout(xaxis_title='Time Period', yaxis_title='Values', title=f'Analiza {DMA}: DMA Sales, Base_S & Marketing Spendings for {DMA}')
+    fig_DMA.update_layout(xaxis_title='Time Period', yaxis_title='Values', title=f'Analiza {DMA}: Yi, Base_S & Marketing Spendings for {DMA}')
     fig_DMA.update_layout(showlegend=True)    
     st.plotly_chart(fig_DMA)
