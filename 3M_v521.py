@@ -226,7 +226,7 @@ with col2:
     
 #submitted = st.form_submit_button("Run Symulation")
 
-st.subheader('Symulation Data', divider='red')
+st.subheader('Data Symulation ', divider='red')
 
 if st.button("Run Symulation", type="primary"):
     Data_T3(base_sales_total, periods, Sp_x, marketing_dict, DMA_dict)
