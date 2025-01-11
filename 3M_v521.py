@@ -181,7 +181,7 @@ col1, col2 = st.columns([0.5, 0.5])
 with col1:
     base_sales_total = st.number_input('Base total Sales', value=150000000, key="<k14>")
     periods = st.slider('Data for x periods?', 1, 1, 156, key="<rsi_window>")
-    st.write('Ustawiamy sezonowość')
+    st.write('Seasonality Configuration')
     amplitude = st.slider('Desire function amplitude?', 1, 1, 100, key = "<comm2>")
     mean = st.slider('Desire function mean?', 1, 1, 100, key = "<comm3>")
     std_dev = st.slider('Desire function std_dev?', 1, 1, 100, key = "<comm4>")
