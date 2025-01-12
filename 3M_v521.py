@@ -247,10 +247,11 @@ with col2:
     st.write('Updated DMA List')
     st.write(DMA_dict)
         
-def convert_df_to_excel(df):
-    output = io.BytesIO()
-    df.to_excel(output, index=True)
-    return output.getvalue()
+def convert_df_to_excel(df): 
+    output = io.BytesIO() 
+    df.to_excel(output, index=True, engine='xlsxwriter') 
+    output.seek(0) # Przesuń wskaźnik na początek pliku 
+    return output
 
 if st.button("Configure Parameters & Run Simulation"):
     # Przykładowa symulacja uruchamiania funkcji Data_T3
