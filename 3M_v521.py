@@ -254,8 +254,9 @@ def convert_df_to_excel(df):
 
 if st.button("Configure Parameters & Run Simulation"):
     # Przykładowa symulacja uruchamiania funkcji Data_T3
-    Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, df_spending_rate, Sp_x, marketing_dict, DMA_dict)
+    Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, df_spending_rate, Sp_x, marketing_dict, DMA_dict)    
     excel_data = convert_df_to_excel(df_T4)
+    
     st.download_button(
         label="Download Simulation",
         data=excel_data,
