@@ -22,40 +22,30 @@ def generuj_inc_rev_rate(periods, amplitude, frequency, noise_level):
     #inc_rev_rate = inc_rev_rate / np.sum(inc_rev_rate)  # Normalizuje, aby suma wynosiła 1
     return inc_rev_rate
 
-# Generowanie w oparciu o krzywą Gaussa
-def generuj_sezonowosc(periods, amplitude, mean, std_dev):
+# Generowanie sezonowości w oparciu o krzywą Gaussa
+def generuj_sezonowosc(periods, amplitudeT, mean, std_dev):
     global sezonowosc
     czas = np.arange(periods)
-    sezonowosc = amplitude * np.exp(-0.5 * ((czas - mean) / std_dev) ** 2)
+    sezonowosc = amplitudeT * np.exp(-0.5 * ((czas - mean) / std_dev) ** 2)
     sezonowosc = (sezonowosc - np.min(sezonowosc)) / (np.max(sezonowosc) - np.min(sezonowosc))  # Skaluje do zakresu [0, 1]
     sezonowosc = sezonowosc / np.sum(sezonowosc)  # Normalizuje, aby suma wynosiła 1
     return sezonowosc
 
-def random_gen(periods):
-    _min = 0.01
-    _max = 0.95
-    numbers_ = periods
-    
-    # Generowanie losowych liczb z przedziału 0.05 do 0.95
-    random_numbers = np.random.uniform(_min, _max, numbers_)
-    return random_numbers
-
-def random_gen_rev(periods):
-    _min = 0.01
-    _max = 0.95
-    numbers_ = periods
-    
-    # Generowanie losowych liczb z przedziału 0.05 do 0.95
-    random_numbers_rev = np.random.uniform(_min, _max, numbers_)
-    random_numbers_rev = (random_numbers_rev / random_numbers_rev.sum()) * 1
-    return random_numbers_rev
+# Generowanie sezonowości w oparciu o krzywą Gaussa
+def generuj_sp(periods, amplitudeP, meanP, std_devP):
+    global Spending_rate
+    czas = np.arange(periods)
+    Spending_rate = amplitudeP * np.exp(-0.5 * ((czas - meanP) / std_devP) ** 2)
+    Spending_rate = (Spending_rate - np.min(Spending_rate)) / (np.max(Spending_rate) - np.min(Spending_rate))  # Skaluje do zakresu [0, 1]
+    Spending_rate = Spending_rate / np.sum(Spending_rate)  # Normalizuje, aby suma wynosiła 1
+    return Spending_rate
 
 def random_select(reve_rate_list):
     selected_value = random.choice(reve_rate_list)
     reve_rate_list.remove(selected_value)
     return selected_value
 
-def Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, Sp_x, marketing_dict, DMA_dict):
+def Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, df_spending_rate, Sp_x, marketing_dict, DMA_dict):
     global df_T3
        
     # Tworzenie DataFrame z kolumnami -> przebudowane działa poprawnie
@@ -85,10 +75,10 @@ def Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, Sp_x, marketin
         DMA_distribution_factor = random_select(reve_rate_copy)
         df_T3[f'{dma_key}_BS'] = DMA_distribution_factor * df_T3['Base_S']
 
-    # Dodawanie brakujących kolumn `Sp_r_x` -> to działa dobrze
+    # Dodawanie brakujących kolumn `Sp_r_x` -> to działa jak szalone -> nowa funkcja
     for key in Sp_x.keys():
         column_name = f'Sp_{key[-2:]}'
-        df_T3[f'Sp_r_{key[-2:]}'] = generuj_inc_rev_rate(periods, amplitude, frequency, noise_level)
+        df_T3[f'Sp_r_{key[-2:]}'] = df_spending_rate
 
     # Dystrybucja wartości w kolumnach Inc_reve na poszczególne DMA kolumny -> przebudowane działa poprawnie
     reve_rate_copy = DMA_reve_rate.copy()
@@ -108,19 +98,24 @@ def Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, Sp_x, marketin
         column_name = f'Sp_{key[-2:]}'
         df_T3[f'F_co_{key[-2:]}'] = df_T3['Inc_reve'] / df_T3[column_name]
 
-    # Dodawanie brakującej kolumny `Sales` z wartościami początkowymi -> działa poprawnie
+    # Dodawanie brakującej kolumny `Sales` z wartościami początkowymi
     df_T3['Sales'] = df_T3['Base_S']
+    # Iterowanie przez klucze w Sp_x i akumulowanie wartości
     for sp_key in Sp_x.keys():
-        df_T3['Sales'] = df_T3['Base_S'] + (df_T3[f'Sp_{sp_key[-2:]}'] * df_T3[f'F_co_{sp_key[-2:]}'])
+        df_T3['Sales'] += df_T3[f'Sp_{sp_key[-2:]}'] * df_T3[f'F_co_{sp_key[-2:]}']
 
-    # Dodawanie kolumn `DMA1_Sp_x1` zgodnie ze słownikiem DMA_dict -> działa poprawnie
-    reve_rate_copy = DMA_reve_rate.copy() 
-    for sp_key in Sp_x.keys():
-        for dma_key in DMA_dict.keys(): 
-            if len(reve_rate_copy) == 0: 
-                reve_rate_copy = DMA_reve_rate.copy() # Reset listy, jeśli wszystkie wartości zostały wykorzystane 
-            DMA_distribution_factor = random_select(reve_rate_copy) 
-            df_T3[f'{dma_key}_{sp_key}'] = DMA_distribution_factor * df_T3[f'Sp_{sp_key[-2:]}']
+    # Dodawanie brakujących kolumn typu `DMA1_Sp_r_x1` i wypełnianie danymi z df_spending_rate 
+    for dma_key in DMA_dict.keys(): 
+        for key in Sp_x.keys(): 
+            column_name = f'{dma_key}_Sp_r_{key[-2:]}' 
+            df_T3[column_name] = df_spending_rate
+
+    # Dodanie kolumn DMA_Sp_x jako iloczyn odpowiednich kolumn DMA_Sp_r_x i Sp_x
+    for key in Sp_x.keys():
+        for dma_key in DMA_dict.keys():
+            column_name = f'Sp_{key[-2:]}'
+            dma_column_name = f'{dma_key}_{column_name}'
+            df_T3[dma_column_name] = df_T3[f'{dma_key}_Sp_r_{key[-2:]}'] * df_T3[column_name]
 
     # Dodawanie kolumn `DMA1_R_co_x1` zgodnie ze słownikami -> działa 
     for sp_key in Sp_x.keys(): 
@@ -129,11 +124,11 @@ def Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, Sp_x, marketin
 
     # Dodawanie kolumn `Sales_DMA` dla każdego DMA
     for dma_key in DMA_dict.keys():
-        #df_T3[f'Sales_{dma_key}'] = df_T3[f'{dma_key}_BS']
+        df_T3[f'Sales_{dma_key}'] = df_T3[f'{dma_key}_BS']
         for sp_key in Sp_x.keys():
             first_calculation = df_T3[f'F_co_{sp_key[-2:]}'] * df_T3[f'{dma_key}_Sp_{sp_key[-2:]}']
             second_calculation = df_T3[f'{dma_key}_R_co_{sp_key[-2:]}'] * df_T3[f'{dma_key}_Sp_{sp_key[-2:]}']
-            df_T3[f'Sales_{dma_key}'] = df_T3[f'{dma_key}_BS'] + (first_calculation + second_calculation)  
+            df_T3[f'Sales_{dma_key}'] += (first_calculation + second_calculation)
 
     # Zapis do pliku Excel
     df_T3 = df_T3.replace([np.nan, np.inf, -np.inf], 0)
@@ -175,7 +170,7 @@ def update_dict(old_key, new_key):
     if old_key in marketing_dict:
         marketing_dict[new_key] = marketing_dict.pop(old_key)
          
-def Seasonality_Trend(periods, amplitudeT, mean,std_dev ):   
+def Seasonality_Trend(periods, amplitudeT, mean, std_dev ):   
     global df_sezon
     df_sezon = np.array(generuj_sezonowosc(periods, amplitudeT, mean, std_dev))
     df_sezon_df = pd.DataFrame(df_sezon)
@@ -197,6 +192,17 @@ def Incentive_Revenu_Rate_Function(periods, amplitude, frequency, noise_level ):
     fig_1.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Incentive Revenu Rate Forecast by X-Function')    
     st.plotly_chart(fig_1)
 
+def Spending_Rate_Function(periods, amplitudeP, meanP, std_devP):
+    global df_spending_rate
+    df_spending_rate = np.array(generuj_sp(periods, amplitudeP, meanP, std_devP))
+    df_spending_rate_df = pd.DataFrame(df_spending_rate)
+    df_spending_rate_df = df_spending_rate_df.rename(columns={0: 'Forecast'})
+    df_spending_rate_df['Time Period'] = range(1, periods + 1) 
+    fig_2 = px.line(df_spending_rate_df, x='Time Period', y=['Forecast'], color_discrete_map={
+                    'Forecast': '#6B8E23'}, width=1000, height=300) 
+    fig_2.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Spending Rate Forecast by Gausse')    
+    st.plotly_chart(fig_2)
+
 st.subheader('Data Symulation', divider='red')
 col1, col2 = st.columns([0.5, 0.5])
 with col1:
@@ -213,6 +219,11 @@ with col1:
     frequency = st.slider('Desire function frequency?', min_value=0.1, max_value=10.0, value=1.0, step=0.1, key="<com3>")
     noise_level = st.slider('Desire function noise_level?', min_value=0.1, max_value=10.0, value=1.0, step=0.1, key="<com4>")
     Incentive_Revenu_Rate_Function(periods, amplitude, frequency, noise_level )
+    st.write('Marketing Spending Trend Function')
+    amplitudeP = st.slider('Desire function amplitude?', 1, 1, 200, key = "<comm21>")
+    meanP = st.slider('Desire function mean?', 1, 1, 200, key = "<comm31>")
+    std_devP = st.slider('Desire function std_dev?', 1, 1, 200, key = "<comm41>")
+    Spending_Rate_Function(periods, amplitudeP, meanP, std_devP)
 with col2:
     marketing_dict = {'_x1': '_TV', '_x2': '_Facebook', '_x3': '_Onet', '_x4': '_Wp','_x5':'_GW'}
     Sp_x = {'Sp_x1':'35000000','Sp_x2':'25000000','Sp_x3':'15000000','Sp_x4':'10000000','Sp_x5':'15000000'}
@@ -237,7 +248,7 @@ with col2:
     st.write(DMA_dict)
         
 if st.button("Configure Parameters & Run Symulation"):
-    Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, Sp_x, marketing_dict, DMA_dict)
+    Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate,df_spending_rate, Sp_x, marketing_dict, DMA_dict)
     
 show_table = st.checkbox('Do you want to see data table ?')
 if show_table:
@@ -259,7 +270,7 @@ def run_sales_decomposition_chart():
     new_sp_colors = {sp_columns[i]: list(base_color_map.values())[3 + i % (len(base_color_map) - 3)] for i in range(len(sp_columns))}
     color_discrete_map = {**base_color_map, **new_sp_colors}
     fig_base = px.area(df_T4_s1, x='Time Period', y=y_columns, color_discrete_map=color_discrete_map, width=2000, height=600)
-    fig_base.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Yi, Base_S & Marketing Spendings')
+    fig_base.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Sales, Base_S & Marketing Spendings')
     fig_base.update_layout(showlegend=True)
     st.plotly_chart(fig_base)
 
@@ -288,7 +299,7 @@ def run_dma_sales_decomposition_chart(DMA):
     new_sp_colors = {sp_columns[i]: list(base_color_map.values())[3 + i % (len(base_color_map) - 3)] for i in range(len(sp_columns))}
     color_discrete_map = {**base_color_map, **new_sp_colors}
     fig_DMA = px.area(df_T4_DMA, x='Time Period', y=y_columns, color_discrete_map=color_discrete_map, width=2000, height=600)
-    fig_DMA.update_layout(xaxis_title='Time Period', yaxis_title='Values', title=f'Analiza {DMA}: Yi, Base_S & Marketing Spendings for {DMA}')
+    fig_DMA.update_layout(xaxis_title='Time Period', yaxis_title='Values', title=f'Analiza {DMA}: Sales, Base_S & Marketing Spendings for {DMA}')
     fig_DMA.update_layout(showlegend=True)
     st.plotly_chart(fig_DMA)
 
