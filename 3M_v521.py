@@ -109,7 +109,7 @@ def Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, Sp_x, marketin
         df_T3[f'F_co_{key[-2:]}'] = df_T3['Inc_reve'] / df_T3[column_name]
 
     # Dodawanie brakującej kolumny `Sales` z wartościami początkowymi -> działa poprawnie
-    #df_T3['Sales'] = df_T3['Base_S']
+    df_T3['Sales'] = df_T3['Base_S']
     for sp_key in Sp_x.keys():
         df_T3['Sales'] = df_T3['Base_S'] + (df_T3[f'Sp_{sp_key[-2:]}'] * df_T3[f'F_co_{sp_key[-2:]}'])
 
