@@ -247,10 +247,21 @@ with col2:
     st.write('Updated DMA List')
     st.write(DMA_dict)
         
-if st.button("Configure Parameters & Run Symulation"):
-    Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate,df_spending_rate, Sp_x, marketing_dict, DMA_dict)
-    st.download_button("Download Symulation", df_T4.to_excel('Data_T4.xlsx', index=True))
-    
+def convert_df_to_excel(df):
+    output = io.BytesIO()
+    df.to_excel(output, index=True)
+    return output.getvalue()
+
+if st.button("Configure Parameters & Run Simulation"):
+    # Przykładowa symulacja uruchamiania funkcji Data_T3
+    Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, df_spending_rate, Sp_x, marketing_dict, DMA_dict)
+    excel_data = convert_df_to_excel(df_T4)
+    st.download_button(
+        label="Download Simulation",
+        data=excel_data,
+        file_name="Data_T4.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
 show_table = st.checkbox('Do you want to see data table ?')
 if show_table:
     df_T4_s = pd.read_excel('Data_T4.xlsx', index_col=0)
