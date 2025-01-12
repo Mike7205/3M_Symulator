@@ -158,10 +158,8 @@ def zamien_nazwy_wierszy(df_T3):
     df_T4 = df_T4.rename(columns=zamien_prefiks)
     df_T4 = df_T4.loc[:, ~df_T4.columns.str.startswith('Unnamed')]
     df_T4 = df_T4.replace([np.nan, np.inf, -np.inf], 0)
-    
-    df_T4_ready = df_T4.to_excel('Data_T4.xlsx', index=True)
-    st.download_button("Download Symulation", df_T4_ready)
-    
+    df_T4.to_excel('Data_T4.xlsx', index=True)
+      
     return df_T4
 
 # Definicja układu strony
@@ -251,6 +249,7 @@ with col2:
         
 if st.button("Configure Parameters & Run Symulation"):
     Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate,df_spending_rate, Sp_x, marketing_dict, DMA_dict)
+    st.download_button("Download Symulation", df_T4.to_excel('Data_T4.xlsx', index=True))
     
 show_table = st.checkbox('Do you want to see data table ?')
 if show_table:
