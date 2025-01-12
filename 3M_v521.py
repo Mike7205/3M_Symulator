@@ -158,7 +158,9 @@ def zamien_nazwy_wierszy(df_T3):
     df_T4 = df_T4.rename(columns=zamien_prefiks)
     df_T4 = df_T4.loc[:, ~df_T4.columns.str.startswith('Unnamed')]
     df_T4 = df_T4.replace([np.nan, np.inf, -np.inf], 0)
-    df_T4.to_excel('Data_T4.xlsx', index=True)
+    
+    df_T4_ready = df_T4.to_excel('Data_T4.xlsx', index=True)
+    st.download_button("Download Symulation", df_T4_ready)
     
     return df_T4
 
