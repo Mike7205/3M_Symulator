@@ -163,7 +163,7 @@ def zamien_nazwy_wierszy(df_T3):
     return df_T4
 
 # Definicja układu strony
-st.title('Marketing Mix Modeling Simulation Engine v2.5')
+st.title('Marketing Mix Modeling Simulation Engine v3 + Ad Block Symulation')
 
 # Funkcja aktualizująca słownik
 def update_dict(old_key, new_key):
