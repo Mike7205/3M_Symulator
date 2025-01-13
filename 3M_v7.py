@@ -20,7 +20,7 @@ def generuj_inc_rev_rate(periods, amplitude, frequency, noise_level):
         #smooth_noise = amplitude * np.sin(2 * np.pi * frequency * czas / periods) + noise_level * np.sin(4 * np.pi * frequency * czas / periods)
         #smooth_noise = amplitude * np.arctan(2 * np.pi * frequency * czas / periods) + noise_level * np.arctan(4 * np.pi * frequency * czas / periods)
         #smooth_noise = amplitude * np.arctan(np.sin(2 * np.pi * frequency * czas / periods) + noise_level * np.sin(4 * np.pi * frequency * czas / periods))
-    smooth_noise = np.clip(smooth_noise, -0.15 * amplitude, None)
+    # smooth_noise = np.clip(smooth_noise, -0.15 * amplitude, None)
     inc_rev_rate = amplitude * (np.sin(czas / 10 * frequency) + np.cos(czas / 5 * frequency)) + smooth_noise
         #inc_rev_rate = amplitude * (np.arctan(czas / 10 * frequency) + np.sin(czas / 5 * frequency)) + smooth_noise
         #inc_rev_rate = (inc_rev_rate - np.min(inc_rev_rate)) / (np.max(inc_rev_rate) - np.min(inc_rev_rate))  # Skaluje do zakresu [0, 1]
@@ -41,8 +41,8 @@ def generuj_sp(periods, amplitudeP, frequencyP, noise_levelP):
     global Spending_rate
     czas = np.arange(periods)
     smooth_noise = np.cumsum(np.random.normal(0, noise_levelP, periods))
-    smooth_noise = np.clip(smooth_noise, -0.15 * amplitudeP, None)
-    Spending_rate = amplitude * (np.sin(czas / 10 * frequencyP) + np.cos(czas / 5 * frequencyP)) + smooth_noise
+        # smooth_noise = np.clip(smooth_noise, -0.15 * amplitudeP, None)
+    Spending_rate = amplitudeP * (np.sin(czas / 10 * frequencyP) + np.cos(czas / 5 * frequencyP)) + smooth_noise
     
     #Spending_rate = amplitudeP * np.exp(-0.5 * ((czas - meanP) / std_devP) ** 2) + smooth_noise
     #Spending_rate = (Spending_rate - np.min(Spending_rate)) / (np.max(Spending_rate) - np.min(Spending_rate))  # Skaluje do zakresu [0, 1]
