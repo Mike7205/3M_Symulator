@@ -17,14 +17,14 @@ DMA_reve_rate = [0.18, 0,13, 0.27, 0.19, 0.23] #[0.2, 0.15, 0.3, 0.1, 0.25]  # g
 def generuj_inc_rev_rate(periods, amplitude, frequency, noise_level):
     czas = np.arange(periods)
     smooth_noise = np.cumsum(np.random.normal(0, noise_level, periods))  # Ten szum jest za duży
-    #smooth_noise = amplitude * np.sin(2 * np.pi * frequency * czas / periods) + noise_level * np.sin(4 * np.pi * frequency * czas / periods)
-    #smooth_noise = amplitude * np.arctan(2 * np.pi * frequency * czas / periods) + noise_level * np.arctan(4 * np.pi * frequency * czas / periods)
-    #smooth_noise = amplitude * np.arctan(np.sin(2 * np.pi * frequency * czas / periods) + noise_level * np.sin(4 * np.pi * frequency * czas / periods))
+        #smooth_noise = amplitude * np.sin(2 * np.pi * frequency * czas / periods) + noise_level * np.sin(4 * np.pi * frequency * czas / periods)
+        #smooth_noise = amplitude * np.arctan(2 * np.pi * frequency * czas / periods) + noise_level * np.arctan(4 * np.pi * frequency * czas / periods)
+        #smooth_noise = amplitude * np.arctan(np.sin(2 * np.pi * frequency * czas / periods) + noise_level * np.sin(4 * np.pi * frequency * czas / periods))
     smooth_noise = np.clip(smooth_noise, -0.15 * amplitude, None)
     inc_rev_rate = amplitude * (np.sin(czas / 10 * frequency) + np.cos(czas / 5 * frequency)) + smooth_noise
-    #inc_rev_rate = amplitude * (np.arctan(czas / 10 * frequency) + np.sin(czas / 5 * frequency)) + smooth_noise
-    #inc_rev_rate = (inc_rev_rate - np.min(inc_rev_rate)) / (np.max(inc_rev_rate) - np.min(inc_rev_rate))  # Skaluje do zakresu [0, 1]
-    #inc_rev_rate = inc_rev_rate / np.sum(inc_rev_rate)  # Normalizuje, aby suma wynosiła 1
+        #inc_rev_rate = amplitude * (np.arctan(czas / 10 * frequency) + np.sin(czas / 5 * frequency)) + smooth_noise
+        #inc_rev_rate = (inc_rev_rate - np.min(inc_rev_rate)) / (np.max(inc_rev_rate) - np.min(inc_rev_rate))  # Skaluje do zakresu [0, 1]
+        #inc_rev_rate = inc_rev_rate / np.sum(inc_rev_rate)  # Normalizuje, aby suma wynosiła 1
     return inc_rev_rate
 
 # Generowanie sezonowości w oparciu o krzywą Gaussa
@@ -63,7 +63,7 @@ def Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, df_spending_ra
             'Time Period': [f'P{i+1}' for i in range(periods)],
             'Base_S_Plan_rate': df_sezon,
             'Base_S': df_sezon * base_sales_total, # sezonowosc
-            'Inc_rev_rate': df_inc_rev_rate # generuj_inc_rev_rate(periods, amplitude, frequency, noise_level),
+            'Inc_rev_rate': df_inc_rev_rate 
     })
     # Obliczanie wartości w kolumnie 'Inc_reve' jako iloczyn 'Base_S' i 'Inc_rev_rate' 
     df_T3['Inc_reve'] = df_T3['Base_S'] * df_T3['Inc_rev_rate']
@@ -106,7 +106,7 @@ def Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, df_spending_ra
     # Dodawanie kolumn `F_co_` według wzoru `F_co_x1 = Inc_reve / Sp_x1` -> sprawdzone działa
     for key in Sp_x.keys():
         column_name = f'Sp_{key[-2:]}'
-        df_T3[f'F_co_{key[-2:]}'] = df_T3['Inc_reve'] / df_T3[column_name]
+        df_T3[f'F_co_{key[-2:]}'] = (df_T3['Inc_reve'] / df_T3[column_name]) * (1 + df_inc_rev_rate)**2  # tutaj dodałem boosta
 
     # Dodawanie brakującej kolumny `Sales` z wartościami początkowymi
     df_T3['Sales'] = df_T3['Base_S']
