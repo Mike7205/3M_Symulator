@@ -41,9 +41,9 @@ def generuj_sp(periods, amplitudeP, frequencyP, noise_levelP):
     global Spending_rate
     czas = np.arange(periods)
     #smooth_noise = np.cumsum(np.random.normal(0, noise_levelP, periods))
-    smooth_noise = amplitudeP * np.arctan(np.sin(2 * np.pi * frequencyP * czas / periods) + noise_levelP * np.sin(4 * np.pi * frequencyP * czas / periods))
-    smooth_noise = np.clip(smooth_noise, 0.005 * amplitudeP, None)
-    Spending_rate = amplitudeP * (np.sin(czas / 10 * frequencyP) + np.cos(czas / 5 * frequencyP)) + smooth_noise
+    #smooth_noise = amplitudeP * np.arctan(np.sin(2 * np.pi * frequencyP * czas / periods) + noise_levelP * np.sin(4 * np.pi * frequencyP * czas / periods))
+    #smooth_noise = np.clip(smooth_noise, 0.005 * amplitudeP, None)
+    Spending_rate = amplitudeP * (np.sin(czas / 10 * frequencyP) + np.cos(czas / 5 * frequencyP)) #+ smooth_noise
     
     #Spending_rate = amplitudeP * np.exp(-0.5 * ((czas - meanP) / std_devP) ** 2) + smooth_noise
     #Spending_rate = (Spending_rate - np.min(Spending_rate)) / (np.max(Spending_rate) - np.min(Spending_rate))  # Skaluje do zakresu [0, 1]
