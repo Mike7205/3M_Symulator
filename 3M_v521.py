@@ -102,7 +102,7 @@ def Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, df_spending_ra
     df_T3['Sales'] = df_T3['Base_S']
     # Iterowanie przez klucze w Sp_x i akumulowanie wartości
     for sp_key in Sp_x.keys():
-        df_T3['Sales'] += df_T3[f'Sp_{sp_key[-2:]}'] * df_T3[f'F_co_{sp_key[-2:]}']
+        df_T3['Sales'] += df_T3[f'Sp_{sp_key[-2:]}'] * df_T3[f'F_co_{sp_key[-2:]}'].mean()
 
     # Dodawanie brakujących kolumn typu `DMA1_Sp_r_x1` i wypełnianie danymi z df_spending_rate 
     for dma_key in DMA_dict.keys(): 
@@ -126,7 +126,7 @@ def Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, df_spending_ra
     for dma_key in DMA_dict.keys():
         df_T3[f'Sales_{dma_key}'] = df_T3[f'{dma_key}_BS']
         for sp_key in Sp_x.keys():
-            first_calculation = df_T3[f'F_co_{sp_key[-2:]}'] * df_T3[f'{dma_key}_Sp_{sp_key[-2:]}']
+            first_calculation = df_T3[f'F_co_{sp_key[-2:]}'].mean() * df_T3[f'{dma_key}_Sp_{sp_key[-2:]}']
             second_calculation = df_T3[f'{dma_key}_R_co_{sp_key[-2:]}'] * df_T3[f'{dma_key}_Sp_{sp_key[-2:]}']
             df_T3[f'Sales_{dma_key}'] += (first_calculation + second_calculation)
 
