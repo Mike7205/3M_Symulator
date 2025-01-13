@@ -318,7 +318,7 @@ def run_sales_decomposition_chart():
     sorted_y_columns = column_sums.index.tolist()
     
     # Tworzenie wykresu typu area
-    fig_base = px.area(df_T4_s1, x='Time Period', y=sorted_y_columns, color_discrete_sequence=px.colors.sequential.Viridis, width=1000, height=400)
+    fig_base = px.area(df_T4_s1, x='Time Period', y=sorted_y_columns, color_discrete_sequence=px.colors.sequential.Sunset, width=1000, height=400)
     fig_base.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Sales, Base_S & Marketing Spendings', showlegend=True)
     fig_base.update_layout(showlegend=True)
     st.plotly_chart(fig_base)
