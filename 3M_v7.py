@@ -19,7 +19,7 @@ def generuj_inc_rev_rate(periods, amplitude, frequency, noise_level):
     smooth_noise = np.cumsum(np.random.normal(0, noise_level, periods))  # Ten szum jest za duży
         #smooth_noise = amplitude * np.sin(2 * np.pi * frequency * czas / periods) + noise_level * np.sin(4 * np.pi * frequency * czas / periods)
         #smooth_noise = amplitude * np.arctan(2 * np.pi * frequency * czas / periods) + noise_level * np.arctan(4 * np.pi * frequency * czas / periods)
-    #smooth_noise = amplitude * np.arctan(np.sin(2 * np.pi * frequency * czas / periods) + noise_level * np.sin(4 * np.pi * frequency * czas / periods))
+        #smooth_noise = amplitude * np.arctan(np.sin(2 * np.pi * frequency * czas / periods) + noise_level * np.sin(4 * np.pi * frequency * czas / periods))
     smooth_noise = np.clip(smooth_noise, -0.15 * amplitude, None)
     inc_rev_rate = amplitude * (np.sin(czas / 10 * frequency) + np.cos(czas / 5 * frequency)) + smooth_noise
     inc_rev_rate = np.clip(inc_rev_rate, -0.1 * amplitude, None)
@@ -65,6 +65,32 @@ def Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, df_spending_ra
     # Obliczanie wartości w kolumnie 'Inc_reve' jako iloczyn 'Base_S' i 'Inc_rev_rate' 
     df_T3['Inc_reve'] = df_T3['Base_S'] * df_T3['Inc_rev_rate']
 
+import pandas as pd
+
+def Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, df_spending_rate, Sp_x, marketing_dict, DMA_dict):
+    global df_T3
+       
+    # Tworzenie DataFrame z kolumnami
+    df_T3 = pd.DataFrame({
+        'Time Period': [f'P{i+1}' for i in range(periods)],
+        'Base_S_Plan_rate': df_sezon,
+        'Base_S': df_sezon * base_sales_total, # sezonowosc
+        'Inc_rev_rate': df_inc_rev_rate 
+    })
+    # Obliczanie wartości w kolumnie 'Inc_reve' jako iloczyn 'Base_S' i 'Inc_rev_rate' 
+    df_T3['Inc_reve'] = df_T3['Base_S'] * df_T3['Inc_rev_rate']
+    
+    # Obliczanie sumy wartości w słowniku
+    sum_sp_x_dict = sum(float(value) for value in Sp_x.values())
+
+    # Obliczanie udziału procentowego w formie ułamka dziesiętnego
+    sales_share = {key: float(value) / sum_sp_x_dict for key, value in Sp_x.items()}
+
+    # Tworzenie df_sales_share
+    df_sales_share = pd.DataFrame(list(sales_share.items()), columns=['Sa_r_x', 'Value'])
+    df_sales_share['Sa_r_x'] = [f'Sa_r_x{index+1}' for index in range(len(Sp_x))]
+    df_sales_share['Value'] = df_sales_share['Value'].map('{:.3f}'.format)
+  
     # Obliczanie sumy wartości w słowniku Sp_x -> wyniki ok
     sum_sp_x_dict = sum(float(value) for value in Sp_x.values())
     st.write(f"Total Marketing Spendings: {sum_sp_x_dict:,.2f}")
@@ -111,6 +137,11 @@ def Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, df_spending_ra
     for sp_key in Sp_x.keys():
         df_T3['Sales'] += df_T3[f'Sp_{sp_key[-2:]}'] * df_T3[f'F_co_{sp_key[-2:]}']
 
+     # Tworzenie kolumn Sa_x w df_T3
+    for index, row in df_sales_share.iterrows():
+        column_name = row['Sa_r_x'].replace('Sa_r_', 'Sa_')
+        df_T3[column_name] = float(row['Value']) * df_T3['Sales']
+    
     # Dodawanie brakujących kolumn typu `DMA1_Sp_r_x1` i wypełnianie danymi z df_spending_rate 
     for dma_key in DMA_dict.keys(): 
         for key in Sp_x.keys(): 
@@ -137,6 +168,12 @@ def Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, df_spending_ra
             second_calculation = df_T3[f'{dma_key}_R_co_{sp_key[-2:]}'] * df_T3[f'{dma_key}_Sp_{sp_key[-2:]}']
             df_T3[f'Sales_{dma_key}'] += (first_calculation + second_calculation)
 
+    # Dodawanie kolumn `DMA_Sa_x` dla każdego DMA
+    for dma_key in DMA_dict.keys():
+        for index, row in df_sales_share.iterrows():
+            column_name = f'DMA_{dma_key}_{row["Sa_r_x"].replace("Sa_r_", "Sa_")}'
+            df_T3[column_name] = float(row['Value']) * df_T3[f'Sales_{dma_key}']
+        
     # Zapis do pliku Excel
     df_T3 = df_T3.replace([np.nan, np.inf, -np.inf], 0)
     df_T3.to_excel('Data_T3.xlsx', index=True)
@@ -273,18 +310,16 @@ if checkbox_table:
 def run_sales_decomposition_chart():
     st.subheader('Total Sales decomposition chart', divider='red')
     df_T4_s1 = pd.read_excel('Data_T4.xlsx', index_col=0)
-    #sp_columns = [col for col in df_T4_s1.columns if col.startswith('Sp_')]
-    sp_columns = [col for col in df_T4_s1.columns if col.startswith('Sp_') and not 'Sp_r_' in col]
+    sp_columns = [col for col in df_T4_s1.columns if col.startswith('Sa_')]
     sp_columns = sp_columns[:5]
-    y_columns = ['Base_S', 'Sales'] + sp_columns  
-
-    base_color_map = {'Base_S': '#636EFA',  'Sales': '#FFD700',
-        'Sp_TV': '#EF553B', 'Sp_Facebook': '#AB63FA', 'Sp_Onet': '#FFA15A', 'Sp_Wp': '#19D3F3', 'Sp_Twiter': '#F6BE00'}
-
-    new_sp_colors = {sp_columns[i]: list(base_color_map.values())[3 + i % (len(base_color_map) - 3)] for i in range(len(sp_columns))}
-    color_discrete_map = {**base_color_map, **new_sp_colors}
-    fig_base = px.area(df_T4_s1, x='Time Period', y=y_columns, color_discrete_map=color_discrete_map, width=2000, height=600)
-    fig_base.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Sales, Base_S & Marketing Spendings')
+    y_columns = ['Sales', 'Base_S'] + sp_columns
+    
+    column_sums = df_T4_s1[y_columns].sum().sort_values(ascending=True)
+    sorted_y_columns = column_sums.index.tolist()
+    
+    # Tworzenie wykresu typu area
+    fig_base = px.area(df_T4_s1, x='Time Period', y=sorted_y_columns, color_discrete_sequence=px.colors.sequential.Viridis, width=1000, height=400)
+    fig_base.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Sales, Base_S & Marketing Spendings', showlegend=True)
     fig_base.update_layout(showlegend=True)
     st.plotly_chart(fig_base)
 
@@ -295,25 +330,22 @@ if checkbox_decomp_chart:
 # Sekcja DMA Sales Decomposition Chart 
 def run_dma_sales_decomposition_chart(DMA):
     df_T4_s2 = pd.read_excel('Data_T4.xlsx', index_col=0)
-    df_T4_DMA = df_T4_s2[['Time Period', f'{DMA}_BS', f'{DMA}_Inc_rev', f'Sales_{DMA}'] + [col for col in df_T4_s2.columns if col.startswith(f'{DMA}_Sp_')]]  
-    #sp_columns = [col for col in df_T4_DMA.columns if col.startswith(f'{DMA}_Sp_')]   
-    sp_columns = [col for col in df_T4_DMA.columns if col.startswith(f'{DMA}_Sp_') and f'{DMA}_Sp_r_' not in col]
-
-    sp_columns = sp_columns[:5]   
-    y_columns = [f'{DMA}_BS', f'Sales_{DMA}'] + sp_columns  
-
-    base_color_map = {
-        f'{DMA}_BS': '#1f77b4',  # niebieski
-        f'Sales_{DMA}': '#2ca02c',  # zielony
-        f'{DMA}_Sp_TV': '#d62728',  # czerwony
-        f'{DMA}_Sp_Facebook': '#9467bd',  # fioletowy
-        f'{DMA}_Sp_Onet': '#8c564b',  # brązowy
-        f'{DMA}_Sp_Wp': '#e377c2',  # różowy
-        f'{DMA}_Sp_Twiter': '#F6BE00'}  # żółty
-
-    new_sp_colors = {sp_columns[i]: list(base_color_map.values())[3 + i % (len(base_color_map) - 3)] for i in range(len(sp_columns))}
-    color_discrete_map = {**base_color_map, **new_sp_colors}
-    fig_DMA = px.area(df_T4_DMA, x='Time Period', y=y_columns, color_discrete_map=color_discrete_map, width=2000, height=600)
+    
+    # Tworzenie pełnej listy kolumn DMA_Sa zgodnie ze słownikami
+    sa_columns = [col for col in df_T4_s2.columns if f'{DMA}_Sa_' in col]
+    # Tworzenie listy kolumn BS zgodnie z wybranym DMA
+    bs_columns = [f'{DMA}_BS']
+    # Tworzenie listy kolumn Sales zgodnie z wybranym DMA
+    sales_columns = [f'Sales_{DMA}']
+    # Łączenie kolumn BS i Sales
+    yy_columns = bs_columns + sales_columns + sa_columns
+    
+    # Sortowanie kolumn według sumy wartości w df_T4_s2
+    column_sums = df_T4_s2[yy_columns].sum().sort_values(ascending=True)
+    sorted_yy_columns = column_sums.index.tolist()
+    
+    # Tworzenie wykresu typu area z posortowanymi kolumnami
+    fig_DMA = px.area(df_T4_s2, x='Time Period', y=sorted_yy_columns, color_discrete_sequence=px.colors.sequential.Turbo, width=1000, height=400)
     fig_DMA.update_layout(xaxis_title='Time Period', yaxis_title='Values', title=f'Analiza {DMA}: Sales, Base_S & Marketing Spendings for {DMA}')
     fig_DMA.update_layout(showlegend=True)
     st.plotly_chart(fig_DMA)
@@ -323,6 +355,7 @@ if checkbox_dma_chart:
     st.subheader('DMA Sales Decomposition Chart', divider='red')
     DMA = st.radio('', list(DMA_dict.values()), horizontal=True, key='DMA_radio')
     run_dma_sales_decomposition_chart(DMA)
+
 
 # Checkbox Efficency 
 checkbox_efficiency_chart = st.sidebar.checkbox('Run Efficiency Chart', key="<new_key>")
@@ -345,4 +378,3 @@ def run_efficiency_chart():
 
 if checkbox_efficiency_chart:
     run_efficiency_chart()
-
