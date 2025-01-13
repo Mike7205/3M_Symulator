@@ -106,7 +106,7 @@ def Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, df_spending_ra
     # Dodawanie kolumn `F_co_` według wzoru `F_co_x1 = Inc_reve / Sp_x1` -> sprawdzone działa
     for key in Sp_x.keys():
         column_name = f'Sp_{key[-2:]}'
-        df_T3[f'F_co_{key[-2:]}'] = (df_T3['Inc_reve'] / df_T3[column_name]) * (1 + df_inc_rev_rate)**2  # tutaj dodałem boosta
+        df_T3[f'F_co_{key[-2:]}'] = (df_T3['Inc_reve'] / df_T3[column_name]) # * (1 + df_inc_rev_rate)**2  # tutaj dodałem boosta
 
     # Dodawanie brakującej kolumny `Sales` z wartościami początkowymi
     df_T3['Sales'] = df_T3['Base_S']
