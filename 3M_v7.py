@@ -372,7 +372,7 @@ def run_efficiency_chart():
     eff_columns = [f'Eff{value}' for value in marketing_dict.values() if f'Sp{value}' in df_T4_s3.columns]
     df_3M_eff = df_T4_s3[['Time Period'] + eff_columns]
     # Wykres
-    fig_eff1 = px.line(df_3M_eff, x='Time Period', y=eff_columns, width=1000, height=600, color_discrete_sequence=px.colors.sequential.Cividis)
+    fig_eff1 = px.line(df_3M_eff, x='Time Period', y=eff_columns, width=1000, height=600, color_discrete_sequence=px.colors.sequential.Magma)
     fig_eff1.update_layout(title='Efficiency Chart', xaxis_title='Time Period', yaxis_title='Efficiency')
     st.plotly_chart(fig_eff1)
 
