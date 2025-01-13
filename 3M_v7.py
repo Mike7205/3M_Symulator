@@ -299,7 +299,8 @@ def run_dma_sales_decomposition_chart(DMA):
     df_T4_DMA = df_T4_s2[['Time Period', f'{DMA}_BS', f'{DMA}_Inc_rev', f'Sales_{DMA}'] + 
                          [col for col in df_T4_s2.columns if col.startswith(f'{DMA}_Sp_')]]  
     #sp_columns = [col for col in df_T4_DMA.columns if col.startswith(f'{DMA}_Sp_')]   
-    sp_columns = [col for col in df_T4_s1.columns if col.startswith(f'{DMA}_Sp_') and not f'{DMA}_Sp_r_' in col]
+    sp_columns = [col for col in df_T4_s1.columns if col.startswith(f'{DMA}_Sp_') and f'{DMA}_Sp_r_' not in col]
+
     sp_columns = sp_columns[:5]   
     y_columns = [f'{DMA}_BS', f'Sales_{DMA}'] + sp_columns  
 
