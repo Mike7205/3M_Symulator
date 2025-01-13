@@ -294,12 +294,10 @@ if checkbox_decomp_chart:
  
 # Sekcja DMA Sales Decomposition Chart 
 def run_dma_sales_decomposition_chart(DMA):
-    #if st.button("Run DMA Chart", key='run_dma_chart_btn'):
     df_T4_s2 = pd.read_excel('Data_T4.xlsx', index_col=0)
-    df_T4_DMA = df_T4_s2[['Time Period', f'{DMA}_BS', f'{DMA}_Inc_rev', f'Sales_{DMA}'] + 
-                         [col for col in df_T4_s2.columns if col.startswith(f'{DMA}_Sp_')]]  
+    df_T4_DMA = df_T4_s2[['Time Period', f'{DMA}_BS', f'{DMA}_Inc_rev', f'Sales_{DMA}'] + [col for col in df_T4_s2.columns if col.startswith(f'{DMA}_Sp_')]]  
     #sp_columns = [col for col in df_T4_DMA.columns if col.startswith(f'{DMA}_Sp_')]   
-    sp_columns = [col for col in df_T4_s1.columns if col.startswith(f'{DMA}_Sp_') and f'{DMA}_Sp_r_' not in col]
+    sp_columns = [col for col in df_T4_DMA.columns if col.startswith(f'{DMA}_Sp_') and f'{DMA}_Sp_r_' not in col]
 
     sp_columns = sp_columns[:5]   
     y_columns = [f'{DMA}_BS', f'Sales_{DMA}'] + sp_columns  
