@@ -17,11 +17,12 @@ DMA_reve_rate = [0.18, 0,13, 0.27, 0.19, 0.23] #[0.2, 0.15, 0.3, 0.1, 0.25]  # g
 def generuj_inc_rev_rate(periods, amplitude, frequency, noise_level):
     czas = np.arange(periods)
         #smooth_noise = np.cumsum(np.random.normal(0, noise_level, periods))  # Ten szum jest za duży
-        #smooth_noise = amplitude * np.sin(2 * np.pi * frequency * czas / periods) + noise_level * np.sin(4 * np.pi * frequency * czas / periods)
+    smooth_noise = amplitude * np.sin(2 * np.pi * frequency * czas / periods) + noise_level * np.sin(4 * np.pi * frequency * czas / periods)
         #smooth_noise = amplitude * np.arctan(2 * np.pi * frequency * czas / periods) + noise_level * np.arctan(4 * np.pi * frequency * czas / periods)
-    smooth_noise = amplitude * np.arctan(np.sin(2 * np.pi * frequency * czas / periods) + noise_level * np.sin(4 * np.pi * frequency * czas / periods))
+    #smooth_noise = amplitude * np.arctan(np.sin(2 * np.pi * frequency * czas / periods) + noise_level * np.sin(4 * np.pi * frequency * czas / periods))
     smooth_noise = np.clip(smooth_noise, -0.15 * amplitude, None)
     inc_rev_rate = amplitude * (np.sin(czas / 10 * frequency) + np.cos(czas / 5 * frequency)) + smooth_noise
+    inc_rev_rate = np.clip(inc_rev_rate, -0.1 * amplitude, None)
         #inc_rev_rate = amplitude * (np.arctan(czas / 10 * frequency) + np.sin(czas / 5 * frequency)) + smooth_noise
         #inc_rev_rate = (inc_rev_rate - np.min(inc_rev_rate)) / (np.max(inc_rev_rate) - np.min(inc_rev_rate))  # Skaluje do zakresu [0, 1]
         #inc_rev_rate = inc_rev_rate / np.sum(inc_rev_rate)  # Normalizuje, aby suma wynosiła 1
