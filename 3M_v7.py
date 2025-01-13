@@ -16,9 +16,9 @@ DMA_reve_rate = [0.18, 0,13, 0.27, 0.19, 0.23] #[0.2, 0.15, 0.3, 0.1, 0.25]  # g
 # Generowanie Incentive Revenue Rate krzywą Gaussa z szumem
 def generuj_inc_rev_rate(periods, amplitude, frequency, noise_level):
     czas = np.arange(periods)
-    # smooth_noise = np.cumsum(np.random.normal(0, noise_level, periods))  # Ten szum jest za duży
+    smooth_noise = np.cumsum(np.random.normal(0, noise_level, periods))  # Ten szum jest za duży
     #smooth_noise = amplitude * np.sin(2 * np.pi * frequency * czas / periods) + noise_level * np.sin(4 * np.pi * frequency * czas / periods)
-    smooth_noise = amplitude * np.arctan(2 * np.pi * frequency * czas / periods) + noise_level * np.arctan(4 * np.pi * frequency * czas / periods)
+    #smooth_noise = amplitude * np.arctan(2 * np.pi * frequency * czas / periods) + noise_level * np.arctan(4 * np.pi * frequency * czas / periods)
     #smooth_noise = amplitude * np.arctan(np.sin(2 * np.pi * frequency * czas / periods) + noise_level * np.sin(4 * np.pi * frequency * czas / periods))
     smooth_noise = np.clip(smooth_noise, -0.15 * amplitude, None)
     inc_rev_rate = amplitude * (np.sin(czas / 10 * frequency) + np.cos(czas / 5 * frequency)) + smooth_noise
