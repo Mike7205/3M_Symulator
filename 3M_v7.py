@@ -37,17 +37,12 @@ def generuj_sezonowosc(periods, amplitudeT, mean, std_dev):
     return sezonowosc
 
 # Generowanie sezonowości w oparciu o krzywą Gaussa
-def generuj_sp(periods, amplitudeP, frequencyP, noise_levelP):
+def generuj_sp(periods, amplitudeP, meanP, std_devP):
     global Spending_rate
     czas = np.arange(periods)
-    #smooth_noise = np.cumsum(np.random.normal(0, noise_levelP, periods))
-    #smooth_noise = amplitudeP * np.arctan(np.sin(2 * np.pi * frequencyP * czas / periods) + noise_levelP * np.sin(4 * np.pi * frequencyP * czas / periods))
-    #smooth_noise = np.clip(smooth_noise, 0.005 * amplitudeP, None)
-    Spending_rate = amplitudeP * (np.sin(czas / 10 * frequencyP) + np.cos(czas / 5 * frequencyP)) #+ smooth_noise
-    
-    #Spending_rate = amplitudeP * np.exp(-0.5 * ((czas - meanP) / std_devP) ** 2) + smooth_noise
-    #Spending_rate = (Spending_rate - np.min(Spending_rate)) / (np.max(Spending_rate) - np.min(Spending_rate))  # Skaluje do zakresu [0, 1]
-    #Spending_rate = Spending_rate / np.sum(Spending_rate)  # Normalizuje, aby suma wynosiła 1
+    Spending_rate = amplitudeP * np.exp(-0.5 * ((czas - meanP) / std_devP) ** 2)
+        #Spending_rate = (Spending_rate - np.min(Spending_rate)) / (np.max(Spending_rate) - np.min(Spending_rate))  # Skaluje do zakresu [0, 1]
+        #Spending_rate = Spending_rate / np.sum(Spending_rate)  # Normalizuje, aby suma wynosiła 1
     
     return Spending_rate
 
@@ -208,7 +203,7 @@ def Incentive_Revenu_Rate_Function(periods, amplitude, frequency, noise_level ):
 
 def Spending_Rate_Function(periods, amplitudeP, frequencyP, noise_levelP):
     global df_spending_rate
-    df_spending_rate = np.array(generuj_sp(periods, amplitudeP, frequencyP, noise_levelP))
+    df_spending_rate = np.array(generuj_sp(periods, amplitudeP, meanP, std_devP))
     df_spending_rate_df = pd.DataFrame(df_spending_rate)
     df_spending_rate_df = df_spending_rate_df.rename(columns={0: 'Forecast'})
     df_spending_rate_df['Time Period'] = range(1, periods + 1) 
@@ -238,9 +233,9 @@ with col1:
     
     st.write('Marketing Spending Trend Function')
     amplitudeP = st.slider('Desire function amplitude?', 1, 1, 200, key = "<comm21>")
-    frequencyP = st.slider('Desire function frequency?', 1, 1, 200, key = "<comm31>")
-    noise_levelP = st.slider('Desire function noise_levelv?', 1, 1, 200, key = "<comm41>")
-    Spending_Rate_Function(periods, amplitudeP, frequencyP, noise_levelP)
+    meanP = st.slider('Desire function mean?', 1, 1, 200, key = "<comm31>")
+    std_devP = st.slider('Desire function std_dev?', 1, 1, 200, key = "<comm41>")
+    Spending_Rate_Function(periods, amplitudeP, meanP, std_devP)  
 with col2:
     marketing_dict = {'_x1': '_TV', '_x2': '_Facebook', '_x3': '_Onet', '_x4': '_Wp','_x5':'_GW'}
     Sp_x = {'Sp_x1':'35000000','Sp_x2':'25000000','Sp_x3':'15000000','Sp_x4':'10000000','Sp_x5':'15000000'}
