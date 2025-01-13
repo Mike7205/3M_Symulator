@@ -40,7 +40,9 @@ def generuj_sezonowosc(periods, amplitudeT, mean, std_dev):
 def generuj_sp(periods, amplitudeP, meanP, std_devP):
     global Spending_rate
     czas = np.arange(periods)
-    Spending_rate = amplitudeP * np.exp(-0.5 * ((czas - meanP) / std_devP) ** 2)
+    smooth_noise = np.cumsum(np.random.normal(0, noise_level, periods))
+    smooth_noise = np.clip(smooth_noise, -0.15 * amplitude, None)
+    Spending_rate = amplitudeP * np.exp(-0.5 * ((czas - meanP) / std_devP) ** 2) + smooth_noise
     #Spending_rate = (Spending_rate - np.min(Spending_rate)) / (np.max(Spending_rate) - np.min(Spending_rate))  # Skaluje do zakresu [0, 1]
     #Spending_rate = Spending_rate / np.sum(Spending_rate)  # Normalizuje, aby suma wynosiła 1
     return Spending_rate
