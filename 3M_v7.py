@@ -56,19 +56,6 @@ def random_select(reve_rate_list):
 def Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, df_spending_rate, Sp_x, marketing_dict, DMA_dict):
     global df_T3
        
-    # Tworzenie DataFrame z kolumnami -> przebudowane działa poprawnie
-    df_T3 = pd.DataFrame({
-            'Time Period': [f'P{i+1}' for i in range(periods)],
-            'Base_S_Plan_rate': df_sezon,
-            'Base_S': df_sezon * base_sales_total, # sezonowosc
-            'Inc_rev_rate': df_inc_rev_rate 
-    })
-    # Obliczanie wartości w kolumnie 'Inc_reve' jako iloczyn 'Base_S' i 'Inc_rev_rate' 
-    df_T3['Inc_reve'] = df_T3['Base_S'] * df_T3['Inc_rev_rate']
-
-def Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, df_spending_rate, Sp_x, marketing_dict, DMA_dict):
-    global df_T3
-       
     # Tworzenie DataFrame z kolumnami
     df_T3 = pd.DataFrame({
         'Time Period': [f'P{i+1}' for i in range(periods)],
