@@ -379,7 +379,7 @@ def run_efficiency_chart():
                   title='Media Efficiency Curves')
     
     # Ustawienia osi
-    fig_eff1.update_layout(xaxis=dict(tickmode='linear', tick0=0, dtick=100000, range=[0, 1000000], showgrid=True, 
+    fig_eff1.update_layout(xaxis=dict(tickmode='linear', tick0=0, dtick=50000, range=[0, 300000], showgrid=True, 
                             gridwidth=1, gridcolor='LightGrey', griddash='dash' ),
             yaxis=dict(tickmode='array', tickvals=[1e5, 1e6, 1e7, 1e8, 1e9], ticktext=['100k', '1M', '10M', '100M', '1B'],
                 type='log', showgrid=True, gridwidth=1, gridcolor='LightGrey', griddash='dash' ), title_x=0.5, template='plotly_white')
