@@ -46,7 +46,6 @@ def generuj_sp(periods, amplitudeP, meanP, std_devP):
     Spending_rate = amplitudeP * np.exp(-0.5 * ((czas - meanP) / std_devP) ** 2)
     Spending_rate = (Spending_rate - np.min(Spending_rate)) / (np.max(Spending_rate) - np.min(Spending_rate))  # Skaluje do zakresu [0, 1]
     Spending_rate = Spending_rate / np.sum(Spending_rate)  # Normalizuje, aby suma wynosiła 1
-    
     return Spending_rate
 
 def random_select(reve_rate_list):
@@ -72,14 +71,13 @@ def Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, df_spending_ra
 
     # Obliczanie udziału procentowego w formie ułamka dziesiętnego
     sales_share = {key: float(value) / sum_sp_x_dict for key, value in Sp_x.items()}
-
+    # Korekta losowa sales_share 
+    sales_share = {key: value * random.uniform(0.8 , 0.3) for key, value in sales_share.items()}
     # Tworzenie df_sales_share
     df_sales_share = pd.DataFrame(list(sales_share.items()), columns=['Sa_r_x', 'Value'])
     df_sales_share['Sa_r_x'] = [f'Sa_r_x{index+1}' for index in range(len(Sp_x))]
     df_sales_share['Value'] = df_sales_share['Value'].map('{:.3f}'.format)
   
-    # Obliczanie sumy wartości w słowniku Sp_x -> wyniki ok
-    sum_sp_x_dict = sum(float(value) for value in Sp_x.values())
     st.write(f"Total Marketing Spendings: {sum_sp_x_dict:,.2f}")
     #print(f"Suma wartości w słowniku Sp_x: {sum_sp_x_dict:,.2f}")
     # Obliczanie sumy kolumny Inc_reve > wyniki ok
@@ -305,7 +303,7 @@ def run_sales_decomposition_chart():
     sorted_y_columns = column_sums.index.tolist()
     
     # Tworzenie wykresu typu area
-    fig_base = px.area(df_T4_s1, x='Time Period', y=sorted_y_columns, color_discrete_sequence=px.colors.sequential.Viridis, width=1000, height=400)
+    fig_base = px.area(df_T4_s1, x='Time Period', y=sorted_y_columns, color_discrete_sequence=px.colors.sequential.Sunset, width=1000, height=400)
     fig_base.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Sales, Base_S & Marketing Spendings', showlegend=True)
     fig_base.update_layout(showlegend=True)
     st.plotly_chart(fig_base)
@@ -365,7 +363,7 @@ def run_efficiency_chart():
                   title='Media Efficiency Curves')
     
     # Ustawienia osi
-    fig_eff1.update_layout(xaxis=dict(tickmode='linear', tick0=0, dtick=50000, range=[0, 300000], showgrid=True, 
+    fig_eff1.update_layout(xaxis=dict(tickmode='linear', tick0=0, dtick=100000, range=[0, 1000000], showgrid=True, 
                             gridwidth=1, gridcolor='LightGrey', griddash='dash' ),
             yaxis=dict(tickmode='array', tickvals=[1e5, 1e6, 1e7, 1e8, 1e9], ticktext=['100k', '1M', '10M', '100M', '1B'],
                 type='log', showgrid=True, gridwidth=1, gridcolor='LightGrey', griddash='dash' ), title_x=0.5, template='plotly_white')
@@ -375,7 +373,25 @@ def run_efficiency_chart():
 if checkbox_efficiency_chart:
     run_efficiency_chart()
 
+# Checkbox ROI
+checkbox_ROI_chart = st.sidebar.checkbox('ROI on Media Investments', key="<new_key1>")
+def run_roi_chart():
+    df_T4_s4 = pd.read_excel('Data_T4.xlsx', index_col=0)
+    # Kolumny z wydatkami na media i sprzedaż
+    sa_columns = [col for col in df_T4_s4.columns if col.startswith('Sa_')]
+    sp_columns = [col for col in df_T4_s4.columns if col.startswith('Sp_') and not 'Sp_r_' in col]
+    # Obliczanie sum dla każdej kolumny
+    sum_sa = {col: df_T4_s4[col].sum() for col in sa_columns}
+    sum_sp = {col: df_T4_s4[col].sum() for col in sp_columns}
+    # Upewnijmy się, że kolumny są odpowiednio sparowane
+    paired_columns = list(zip(sp_columns, sa_columns))
+    # Obliczanie ROI dla każdego medium
+    roi = {sp_col: (((sum_sa[sa_col] - sum_sp[sp_col]) / sum_sp[sp_col]) / 100) *100 for sp_col, sa_col in paired_columns}
+    plot_data_roi = pd.DataFrame(list(roi.items()), columns=['Media', 'ROI'])
+    
+    fig_roi = px.bar(plot_data_roi, x='Media', y='ROI', color_discrete_map={'ROI':'blue'}, width=1100, height=600)
+    fig_roi.update_layout(xaxis_title='ROI', yaxis_title='Values in %', title='ROI on marketing investments', showlegend=True)
+    st.plotly_chart(fig_roi)
 
-
-
-
+if checkbox_ROI_chart:
+    run_roi_chart()
