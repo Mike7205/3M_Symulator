@@ -66,8 +66,6 @@ def Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, df_spending_ra
     # Obliczanie wartości w kolumnie 'Inc_reve' jako iloczyn 'Base_S' i 'Inc_rev_rate' 
     df_T3['Inc_reve'] = df_T3['Base_S'] * df_T3['Inc_rev_rate']
 
-import pandas as pd
-
 def Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, df_spending_rate, Sp_x, marketing_dict, DMA_dict):
     global df_T3
        
