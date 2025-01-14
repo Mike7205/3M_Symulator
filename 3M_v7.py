@@ -375,7 +375,7 @@ if checkbox_efficiency_chart:
 
 # Checkbox ROI
 checkbox_ROI_chart = st.sidebar.checkbox('ROI on Media Investments', key="<new_key1>")
-st.sidebar.image('Cap_logo.png', use_column_width=True)
+st.sidebar.image('Cap_logo.png', use_container_width=True)
 def run_roi_chart():
     df_T4_s4 = pd.read_excel('Data_T4.xlsx', index_col=0)
     # Kolumny z wydatkami na media i sprzedaż
