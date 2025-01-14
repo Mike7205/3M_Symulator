@@ -194,7 +194,7 @@ def zamien_nazwy_wierszy(df_T3):
 # Definicja układu strony
 st.title('Marketing Mix Modeling Simulation Dashboard v3 ')
 # Styl zakładki bocznej
-st.html("""<style>[data-testid="stSidebarContent"] {color: black; background-color: #009A17} </style>""")
+st.html("""<style>[data-testid="stSidebarContent"] {color: black; background-color: #30B700} </style>""")
 st.sidebar.subheader('Choose an analytical tool') 
 
 # Funkcja aktualizująca słownik
@@ -391,7 +391,7 @@ def run_roi_chart():
     roi = {sp_col: (((sum_sa[sa_col] - sum_sp[sp_col]) / sum_sp[sp_col]) / 100) *100 for sp_col, sa_col in paired_columns}
     plot_data_roi = pd.DataFrame(list(roi.items()), columns=['Media', 'ROI'])
     
-    fig_roi = px.bar(plot_data_roi, x='Media', y='ROI', color_discrete_map={'ROI':'blue'}, width=1000, height=400)
+    fig_roi = px.bar(plot_data_roi, x='Media', y='ROI', color_discrete_map={'ROI':'#DD3224'}, width=1000, height=400)
     fig_roi.update_layout(xaxis_title='ROI', yaxis_title='Values in %', title='ROI on marketing investments', showlegend=True, bargap=0.6)
     st.plotly_chart(fig_roi)
 
