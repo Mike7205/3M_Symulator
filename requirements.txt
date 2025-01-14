@@ -3,4 +3,7 @@ plotly.express
 openpyxl
 numpy
 pandas
-
+scipy
+scikit-learn
+statsmodels
+tensorflow
