@@ -399,7 +399,7 @@ if checkbox_ROI_chart:
 # Checkbox Random Forest
 checkbox_rand_forest = st.sidebar.checkbox('Random Forest Sales Predictions', key="<new_key2>")
 st.sidebar.markdown("<br>" * 10, unsafe_allow_html=True)
-# st.sidebar.image('Cap_logo.png', use_container_width=True)
+st.sidebar.image('Cap_logo.png', use_container_width=True)
 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
@@ -434,7 +434,7 @@ def rand_forest():
     fig_forest.update_layout(showlegend=True, xaxis=dict(showgrid=True, gridwidth=0.5, gridcolor='Lightgrey'), 
                              yaxis=dict(showgrid=True, gridwidth=0.5, gridcolor='Lightgrey'))
     
-    st.plotly_chart(fig_forest) #, use_container_width=True
+    st.plotly_chart(fig_forest, use_container_width=True)
 
 if checkbox_rand_forest:
     rand_forest()
