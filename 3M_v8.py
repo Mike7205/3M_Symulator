@@ -194,7 +194,7 @@ def zamien_nazwy_wierszy(df_T3):
 # Definicja układu strony
 st.title('Marketing Mix Modeling Simulation Dashboard v3 ')
 # Styl zakładki bocznej
-st.html("""<style>[data-testid="stSidebarContent"] {color: black; background-color: #FC4C02} </style>""")
+st.html("""<style>[data-testid="stSidebarContent"] {color: black; background-color: #ff9913} </style>""")
 st.sidebar.subheader('Choose an analytical tool') 
 
 # Funkcja aktualizująca słownik
