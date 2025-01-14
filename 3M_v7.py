@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
+import plotly.graph_objects as go
 import datetime as dt
 import random
 from datetime import datetime, date
@@ -22,7 +23,7 @@ def generuj_inc_rev_rate(periods, amplitude, frequency, noise_level):
         #smooth_noise = amplitude * np.arctan(np.sin(2 * np.pi * frequency * czas / periods) + noise_level * np.sin(4 * np.pi * frequency * czas / periods))
     smooth_noise = np.clip(smooth_noise, -0.15 * amplitude, None)
     inc_rev_rate = amplitude * (np.sin(czas / 10 * frequency) + np.cos(czas / 5 * frequency)) + smooth_noise
-        #inc_rev_rate = np.clip(inc_rev_rate, -0.1 * amplitude, None)
+    inc_rev_rate = np.clip(inc_rev_rate, -0.1 * amplitude, None)
         #inc_rev_rate = amplitude * (np.arctan(czas / 10 * frequency) + np.sin(czas / 5 * frequency)) + smooth_noise
         #inc_rev_rate = (inc_rev_rate - np.min(inc_rev_rate)) / (np.max(inc_rev_rate) - np.min(inc_rev_rate))  # Skaluje do zakresu [0, 1]
         #inc_rev_rate = inc_rev_rate / np.sum(inc_rev_rate)  # Normalizuje, aby suma wynosiła 1
@@ -164,7 +165,7 @@ def Data_T3(base_sales_total, periods, df_sezon, df_inc_rev_rate, df_spending_ra
     for dma_key in DMA_dict.keys():
         df_T3[f'Sales_{dma_key}'] = df_T3[f'{dma_key}_BS']
         for sp_key in Sp_x.keys():
-            first_calculation = df_T3[f'F_co_{sp_key[-2:]}'] * df_T3[f'{dma_key}_Sp_{sp_key[-2:]}'] # zdjąłem średnią na F_co .mean()
+            first_calculation = df_T3[f'F_co_{sp_key[-2:]}'].mean() * df_T3[f'{dma_key}_Sp_{sp_key[-2:]}'] # zdjąłem średnią na F_co .mean()
             second_calculation = df_T3[f'{dma_key}_R_co_{sp_key[-2:]}'] * df_T3[f'{dma_key}_Sp_{sp_key[-2:]}']
             df_T3[f'Sales_{dma_key}'] += (first_calculation + second_calculation)
 
@@ -318,7 +319,7 @@ def run_sales_decomposition_chart():
     sorted_y_columns = column_sums.index.tolist()
     
     # Tworzenie wykresu typu area
-    fig_base = px.area(df_T4_s1, x='Time Period', y=sorted_y_columns, color_discrete_sequence=px.colors.sequential.Sunset, width=1000, height=400)
+    fig_base = px.area(df_T4_s1, x='Time Period', y=sorted_y_columns, color_discrete_sequence=px.colors.sequential.Viridis, width=1000, height=400)
     fig_base.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Sales, Base_S & Marketing Spendings', showlegend=True)
     fig_base.update_layout(showlegend=True)
     st.plotly_chart(fig_base)
@@ -356,25 +357,39 @@ if checkbox_dma_chart:
     DMA = st.radio('', list(DMA_dict.values()), horizontal=True, key='DMA_radio')
     run_dma_sales_decomposition_chart(DMA)
 
-
 # Checkbox Efficency 
-checkbox_efficiency_chart = st.sidebar.checkbox('Run Efficiency Chart', key="<new_key>")
+checkbox_efficiency_chart = st.sidebar.checkbox('Run Media Efficiency Curves', key="<new_key>")
 def run_efficiency_chart():
     # Źródło danych
     df_T4_s3 = pd.read_excel('Data_T4.xlsx', index_col=0)
-   # Dynamiczne tworzenie kolumn efektywności na podstawie słownika
-    for key, value in marketing_dict.items():
-        spend_column = f'Sp{value}'
-        eff_column = f'Eff{value}'
-        if spend_column in df_T4_s3.columns:
-            df_T4_s3[eff_column] = df_T4_s3['Inc_reve'] / df_T4_s3[spend_column]
-    # Przygotowanie DataFrame do wykresu
-    eff_columns = [f'Eff{value}' for value in marketing_dict.values() if f'Sp{value}' in df_T4_s3.columns]
-    df_3M_eff = df_T4_s3[['Time Period'] + eff_columns]
-    # Wykres
-    fig_eff1 = px.line(df_3M_eff, x='Time Period', y=eff_columns, width=1000, height=600, color_discrete_sequence=px.colors.sequential.Magma)
-    fig_eff1.update_layout(title='Efficiency Chart', xaxis_title='Time Period', yaxis_title='Efficiency')
+    # Kolumny z wydatkami na media
+    sp_columns = [col for col in df_T4_s3.columns if col.startswith('Sp_') and not 'Sp_r_' in col]  
+    # Tworzenie danych do wykresu
+    plot_data = pd.DataFrame()
+    for sp_col in sp_columns:
+        temp_df = pd.DataFrame({
+            'Investments': df_T4_s3[sp_col],
+            'Sales Results': df_T4_s3['Sales'] / df_T4_s3[sp_col],
+            'Media': sp_col
+        }).fillna(0)  
+        plot_data = pd.concat([plot_data, temp_df])
+    
+    # Tworzenie wykresu za pomocą plotly express
+    fig_eff1 = px.line(plot_data, x='Investments', y='Sales Results', color= 'Media', width=2000, height=600, 
+                  title='Media Efficiency Curves')
+    
+    # Ustawienia osi
+    fig_eff1.update_layout(xaxis=dict(tickmode='linear', tick0=0, dtick=100000, range=[0, 1000000], showgrid=True, 
+                            gridwidth=1, gridcolor='LightGrey', griddash='dash' ),
+            yaxis=dict(tickmode='array', tickvals=[1e5, 1e6, 1e7, 1e8, 1e9], ticktext=['100k', '1M', '10M', '100M', '1B'],
+                type='log', showgrid=True, gridwidth=1, gridcolor='LightGrey', griddash='dash' ), title_x=0.5, template='plotly_white')
+    
     st.plotly_chart(fig_eff1)
 
 if checkbox_efficiency_chart:
     run_efficiency_chart()
+
+
+
+
+
