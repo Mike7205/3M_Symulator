@@ -392,7 +392,7 @@ def run_roi_chart():
     plot_data_roi = pd.DataFrame(list(roi.items()), columns=['Media', 'ROI'])
     
     fig_roi = px.bar(plot_data_roi, x='Media', y='ROI', color_discrete_map={'ROI':'blue'}, width=1000, height=400)
-    fig_roi.update_layout(xaxis_title='ROI', yaxis_title='Values in %', title='ROI on marketing investments', showlegend=True, bargap=0.7)
+    fig_roi.update_layout(xaxis_title='ROI', yaxis_title='Values in %', title='ROI on marketing investments', showlegend=True, bargap=0.6)
     st.plotly_chart(fig_roi)
 
 if checkbox_ROI_chart:
