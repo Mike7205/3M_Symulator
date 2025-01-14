@@ -23,7 +23,7 @@ def generuj_inc_rev_rate(periods, amplitude, frequency, noise_level):
         #smooth_noise = amplitude * np.arctan(np.sin(2 * np.pi * frequency * czas / periods) + noise_level * np.sin(4 * np.pi * frequency * czas / periods))
     smooth_noise = np.clip(smooth_noise, -0.15 * amplitude, None)
     inc_rev_rate = amplitude * (np.sin(czas / 10 * frequency) + np.cos(czas / 5 * frequency)) + smooth_noise
-    inc_rev_rate = np.clip(inc_rev_rate, -0.1 * amplitude, None)
+        #inc_rev_rate = np.clip(inc_rev_rate, -0.1 * amplitude, None)
         #inc_rev_rate = amplitude * (np.arctan(czas / 10 * frequency) + np.sin(czas / 5 * frequency)) + smooth_noise
         #inc_rev_rate = (inc_rev_rate - np.min(inc_rev_rate)) / (np.max(inc_rev_rate) - np.min(inc_rev_rate))  # Skaluje do zakresu [0, 1]
         #inc_rev_rate = inc_rev_rate / np.sum(inc_rev_rate)  # Normalizuje, aby suma wynosiła 1
