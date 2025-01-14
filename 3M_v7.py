@@ -391,7 +391,7 @@ def run_roi_chart():
     roi = {sp_col: (((sum_sa[sa_col] - sum_sp[sp_col]) / sum_sp[sp_col]) / 100) *100 for sp_col, sa_col in paired_columns}
     plot_data_roi = pd.DataFrame(list(roi.items()), columns=['Media', 'ROI'])
     
-    fig_roi = px.bar(plot_data_roi, x='Media', y='ROI', color_discrete_map={'ROI':'blue'}, width=1100, height=600)
+    fig_roi = px.bar(plot_data_roi, x='Media', y='ROI', color_discrete_map={'ROI':'blue'}, width=1000, height=400)
     fig_roi.update_layout(xaxis_title='ROI', yaxis_title='Values in %', title='ROI on marketing investments', showlegend=True, bargap=0.5)
     st.plotly_chart(fig_roi)
 
