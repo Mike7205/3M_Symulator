@@ -435,7 +435,7 @@ if checkbox_Arima:
 
 # Checkbox Random Forest
 checkbox_rand_forest = st.sidebar.checkbox('Random Forest Sales Predictions', key="<new_key2>")
-st.sidebar.markdown("<br>" * 10, unsafe_allow_html=True)
+st.sidebar.markdown("<br>" * 9, unsafe_allow_html=True)
 st.sidebar.image('Cap_logo.png', use_container_width=True)
 
 from sklearn.model_selection import train_test_split
