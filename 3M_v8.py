@@ -248,7 +248,7 @@ with col1:
     std_dev = st.slider('Desire function std_dev?', 1, 1, 200, key = "<comm4>")
     Seasonality_Trend(periods, amplitudeT, mean,std_dev )
     
-    st.write('Incentive Revenu Rate Function')
+    st.write('Incentive Revenue Rate Function')
     amplitude = st.slider('Desire function amplitude?', min_value=0.1, max_value=10.0, value=1.0, step=0.1, key="<com2>")
     frequency = st.slider('Desire function frequency?', min_value=0.1, max_value=10.0, value=1.0, step=0.1, key="<com3>")
     noise_level = st.slider('Desire function noise_level?', min_value=0.1, max_value=10.0, value=1.0, step=0.1, key="<com4>")
