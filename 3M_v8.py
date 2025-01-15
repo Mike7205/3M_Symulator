@@ -221,7 +221,7 @@ def Incentive_Revenu_Rate_Function(periods, amplitude, frequency, noise_level ):
     df_inc_rev_rate_df['Time Period'] = range(1, periods + 1)   
     fig_1 = px.line(df_inc_rev_rate_df, x='Time Period', y=['Forecast'], color_discrete_map={
                     'Forecast': '#FF8C00'}, width=1000, height=300) 
-    fig_1.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Incentive Revenu Rate Forecast by X-Function')    
+    fig_1.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Incentive Revenue Rate Forecast by X-Function')    
     st.plotly_chart(fig_1)
 
 def Spending_Rate_Function(periods, amplitudeP, frequencyP, noise_levelP):
