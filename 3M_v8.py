@@ -303,7 +303,7 @@ def run_sales_decomposition_chart():
     sorted_y_columns = column_sums.index.tolist()
     
     # Tworzenie wykresu typu area
-    fig_base = px.area(df_T4_s1, x='Time Period', y=sorted_y_columns, color_discrete_sequence=px.colors.sequential.Sunset, width=1000, height=400)
+    fig_base = px.area(df_T4_s1, x='Time Period', y=sorted_y_columns, color_discrete_sequence=px.colors.sequential.Sunset, width=2000, height=500)
     fig_base.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Sales, Base_S & Marketing Spendings', showlegend=True)
     fig_base.update_layout(showlegend=True)
     st.plotly_chart(fig_base)
@@ -330,10 +330,10 @@ def run_dma_sales_decomposition_chart(DMA):
     sorted_yy_columns = column_sums.index.tolist()
     
     # Tworzenie wykresu typu area z posortowanymi kolumnami
-    fig_DMA = px.area(df_T4_s2, x='Time Period', y=sorted_yy_columns, color_discrete_sequence=px.colors.sequential.Turbo, width=1000, height=400)
+    fig_DMA = px.area(df_T4_s2, x='Time Period', y=sorted_yy_columns, color_discrete_sequence=px.colors.sequential.Turbo, width=2000, height=500)
     fig_DMA.update_layout(xaxis_title='Time Period', yaxis_title='Values', title=f'Analiza {DMA}: Sales, Base_S & Marketing Spendings for {DMA}')
     fig_DMA.update_layout(showlegend=True)
-    st.plotly_chart(fig_DMA)
+    st.plotly_chart(fig_DMA, use_container_width=True)
 
 checkbox_dma_chart = st.sidebar.checkbox('Run DMA Sales decomposition chart', key="<aver3>")
 if checkbox_dma_chart:    
@@ -368,7 +368,7 @@ def run_efficiency_chart():
             yaxis=dict(tickmode='array', tickvals=[1e5, 1e6, 1e7, 1e8, 1e9], ticktext=['100k', '1M', '10M', '100M', '1B'],
                 type='log', showgrid=True, gridwidth=1, gridcolor='LightGrey', griddash='dash' ), title_x=0.5, template='plotly_white')
     
-    st.plotly_chart(fig_eff1)
+    st.plotly_chart(fig_eff1, use_container_width=True)
 
 if checkbox_efficiency_chart:
     run_efficiency_chart()
@@ -391,7 +391,7 @@ def run_roi_chart():
     
     fig_roi = px.bar(plot_data_roi, x='Media', y='ROI', color_discrete_map={'ROI':'#DD3224'}, width=1000, height=400)
     fig_roi.update_layout(xaxis_title='ROI', yaxis_title='Values in %', title='ROI on marketing investments', showlegend=True, bargap=0.6)
-    st.plotly_chart(fig_roi)
+    st.plotly_chart(fig_roi, use_container_width=True)
 
 if checkbox_ROI_chart:
     run_roi_chart()
@@ -426,7 +426,7 @@ def run_Arima():
     arima_chart_df['Predicted Sales'] = forecast_values
     
     fig_ar = px.line(arima_chart_df, x='Time Period', y=['Sales', 'Predicted Sales'], color_discrete_map={
-                  'Sales': 'black', 'Predicted Sales': 'red'}, width=1000, height=500)
+                  'Sales': 'black', 'Predicted Sales': 'red'}, width=2000, height=500)
     fig_ar.update_layout(xaxis=None, yaxis=None)
     st.plotly_chart(fig_ar, use_container_width=True) #, use_container_width=True
 
