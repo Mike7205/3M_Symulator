@@ -396,9 +396,46 @@ def run_roi_chart():
 if checkbox_ROI_chart:
     run_roi_chart()
 
+checkbox_Arima = st.sidebar.checkbox('Arima Model Sales Predictions', key="<new_key23")
+import warnings
+from statsmodels.tsa.arima.model import ARIMA
+def run_Arima():
+    warnings.filterwarnings("ignore")
+    size_a = 3 #st.radio('Prediction for ... days ?: ', [10,9,8,7,6,5,4,3,2,1], horizontal=True, key = "<arima21>")
+    df_int1 = pd.read_excel('Data_T4.xlsx', index_col=0)
+    data = np.asarray(df_int1['Sales']).reshape(-1, 1)
+    p = 10
+    d = 0
+    q = 5
+    n = size_a
+    
+    model = ARIMA(data, order=(p, d, q))
+    model_fit = model.fit(method_kwargs={'maxiter': 3000})
+    model_fit = model.fit(method_kwargs={'xtol': 1e-6})
+    fore_arima = model_fit.forecast(steps=n)  
+    
+    # Zakładam, że Time Period jest serią danych P1, P2, ..., Pn
+    existing_periods = df_int1['Time Period'].tolist()
+    forecast_periods = ['P' + str(len(existing_periods) + i) for i in range(1, size_a + 1)]
+    time_periods = existing_periods + forecast_periods
+    forecast_values = [None] * len(existing_periods) + list(fore_arima)
+    
+    arima_df = pd.DataFrame(df_int1[['Time Period', 'Sales']])
+    arima_pred_df = pd.DataFrame({'Time Period': forecast_periods, 'Predicted Sales': fore_arima})
+    arima_chart_df = pd.concat([arima_df, arima_pred_df], ignore_index=True)
+    arima_chart_df['Predicted Sales'] = forecast_values
+    
+    fig_ar = px.line(arima_chart_df, x='Time Period', y=['Sales', 'Predicted Sales'], color_discrete_map={
+                  'Sales': 'black', 'Predicted Sales': 'red'}, width=1000, height=500)
+    fig_ar.update_layout(xaxis=None, yaxis=None)
+    st.plotly_chart(fig_ar, use_container_width=True) #, use_container_width=True
+
+if checkbox_Arima:
+    run_Arima()
+
 # Checkbox Random Forest
 checkbox_rand_forest = st.sidebar.checkbox('Random Forest Sales Predictions', key="<new_key2>")
-st.sidebar.markdown("<br>" * 10, unsafe_allow_html=True)
+st.sidebar.markdown("<br>" * 9, unsafe_allow_html=True)
 st.sidebar.image('Cap_logo.png', use_container_width=True)
 
 from sklearn.model_selection import train_test_split
@@ -434,7 +471,7 @@ def rand_forest():
     fig_forest.update_layout(showlegend=True, xaxis=dict(showgrid=True, gridwidth=0.5, gridcolor='Lightgrey'), 
                              yaxis=dict(showgrid=True, gridwidth=0.5, gridcolor='Lightgrey'))
     
-    st.plotly_chart(fig_forest, use_container_width=True)
+    st.plotly_chart(fig_forest, use_container_width=True) #, use_container_width=True
 
 if checkbox_rand_forest:
     rand_forest()
