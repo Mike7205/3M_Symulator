@@ -401,7 +401,7 @@ import warnings
 from statsmodels.tsa.arima.model import ARIMA
 def run_Arima():
     warnings.filterwarnings("ignore")
-    size_a = 3 #st.radio('Prediction for ... days ?: ', [10,9,8,7,6,5,4,3,2,1], horizontal=True, key = "<arima21>")
+    size_a = st.radio('Prediction for ... days ?: ', [10,9,8,7,6,5,4,3,2,1], horizontal=True, key = "<arima21>")
     df_int1 = pd.read_excel('Data_T4.xlsx', index_col=0)
     data = np.asarray(df_int1['Sales']).reshape(-1, 1)
     p = 10
@@ -435,7 +435,7 @@ if checkbox_Arima:
 
 # Checkbox Random Forest
 checkbox_rand_forest = st.sidebar.checkbox('Random Forest Sales Predictions', key="<new_key2>")
-st.sidebar.markdown("<br>" * 9, unsafe_allow_html=True)
+st.sidebar.markdown("<br>" * 10, unsafe_allow_html=True)
 st.sidebar.image('Cap_logo.png', use_container_width=True)
 
 from sklearn.model_selection import train_test_split
