@@ -235,7 +235,7 @@ def Spending_Rate_Function(periods, amplitudeP, frequencyP, noise_levelP):
     fig_2.update_layout(xaxis_title='Time Period', yaxis_title='Values', title='Spending Rate Forecast by Gausse')    
     st.plotly_chart(fig_2)
 
-st.subheader('Data Symulation', divider='red')
+st.subheader('Data Simulation', divider='red')
 col1, col2 = st.columns([0.5, 0.5])
 with col1:
     st.write('Principle Parameters')
